@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerWalker : MonoBehaviour
 {
@@ -21,6 +22,7 @@ public class PlayerWalker : MonoBehaviour
         {-1, 0}  //LEFT
     };
     MapGenerator mapGenerator;
+    
 
     // Start is called before the first frame update
     void Start()
@@ -75,6 +77,11 @@ public class PlayerWalker : MonoBehaviour
         directon = DIRECTION.TOP;
         _move();
        }
+
+       if (currentPos.x == mapGenerator.MazeSize_h - 2 && currentPos.y == mapGenerator.MazeSize_w -2){
+        //Debug.Log("Goal!");
+        SceneManager.LoadScene("Maze");
+       }
     }
 
     void _move() //移動用関数
@@ -84,6 +91,7 @@ public class PlayerWalker : MonoBehaviour
         {
             transform.localPosition = mapGenerator.ScreenPos(nextPos);
             currentPos = nextPos;
+            Debug.Log(currentPos);
         }
     }
 }
