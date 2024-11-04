@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
@@ -8,7 +9,7 @@ public class ParameterController : MonoBehaviour
 {
     public class Charactor //キャラクター生成用の基底クラス
     {
-        string name;
+        string Name;
         int Lv;
         int maxHP;
         int HP;
@@ -16,7 +17,7 @@ public class ParameterController : MonoBehaviour
 
         public Charactor(string name, int lv, int maxHP, int atk)
         {
-            this.name = name;
+            this.Name = name;
             this.Lv = lv;
             this.maxHP = maxHP;
             this.HP = maxHP;
@@ -40,7 +41,7 @@ public class ParameterController : MonoBehaviour
             if (damage < 0) damage = 0; //0以下にならないように
             HP -= damage;
 
-            UnityEngine.Debug.Log("name:" + name + "Current HP:" + HP); 
+            UnityEngine.Debug.Log("name:" + Name + "Current HP:" + HP); 
         }
 
         public virtual void YouAreDEAD() //死亡時の関数 上書き前提
@@ -67,5 +68,37 @@ public class ParameterController : MonoBehaviour
         {
             UnityEngine.Debug.Log("Enemy is down.");
         }
+    }
+
+    public int BattleCount = 0; //バトルの数を数える
+    public int SceneCount = 0; //迷路の階層を数える
+
+    public enum SKILL
+    {
+        MAGIC, //レベル防御貫通攻撃
+        HEAL   //回復
+    }
+    public class Weapon //武器のクラス
+    {
+        public string Name;
+        public int WeaponATK;
+        public SKILL WeaponSKILL;
+        //public GameObject WeaponImage;
+
+        public Weapon(string name, int watk, SKILL skill)
+        {
+            this.Name = name;
+            this.WeaponATK = watk;
+            this.WeaponSKILL = skill;
+            //this.WeaponImage = obj;
+        }
+
+        public string GetName() { return Name; }
+
+        public int GetWeaponATK() { return WeaponATK; }
+
+        public SKILL GetWeaponSKILL() { return WeaponSKILL;}
+
+        //public GameObject GetWeaponImage() { return WeaponImage;}
     }
 }

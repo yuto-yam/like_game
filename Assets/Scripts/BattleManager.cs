@@ -12,8 +12,11 @@ public class BattleManager : MonoBehaviour
     [SerializeField] GameObject ParameterManagerObject;
     PlayerDataHolder playerdataholder;
 
+    GameObject PlayerWeponObj;
+
     ParameterController.Enemy enemy; //エネミー生成のための宣言　ここで宣言しないとUpdateで使えない
     int turn; //ターン数表示用変数
+    bool IsWaitingInput = true; //入力待ちのためのbool
 
     // Start is called before the first frame update
     void Start()
@@ -22,7 +25,12 @@ public class BattleManager : MonoBehaviour
         //UnityEngine.Debug.Log("name:" + enemy.name + " " + "Lv:" + enemy.Lv + " " + "HP/ATK:" + enemy.HP + "/" + enemy.ATK);
 
         playerdataholder = ParameterManagerObject.GetComponent<PlayerDataHolder>();
-        UnityEngine.Debug.Log("player's HP:" + playerdataholder.player.GetHP() + " enemy's HP:" + enemy.GetHP());
+        UnityEngine.Debug.Log("player's HP: " + playerdataholder.player.GetHP() + ", enemy's HP: " + enemy.GetHP());
+
+        //プレイヤーの武器を取得して位置を調整
+        PlayerWeponObj = playerdataholder.WeaponPrefab;
+        PlayerWeponObj.transform.position = new Vector3(2.5f, -2f, 0);
+        PlayerWeponObj.transform.Rotate(0, 180f, 0);
 
         turn = 1;
     }
@@ -30,24 +38,40 @@ public class BattleManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (playerdataholder.player.GetHP() > 0 && enemy.GetHP() > 0)
+        // HPが両方とも正で、入力待ちでない場合
+        if (playerdataholder.player.GetHP() > 0 && enemy.GetHP() > 0 && IsWaitingInput)
         {
             UnityEngine.Debug.Log("Turn: " + turn);
 
-            if (Input.GetKeyDown(KeyCode.A)) //通常攻撃
+            // Aキーが押された場合
+            if (Input.GetKeyDown(KeyCode.A)) // 通常攻撃
             {
-                enemy.TakeDamage(playerdataholder.player.GetATK() + playerdataholder.player.GetLv()); //与ダメージ=攻撃力+Lv
-                turn++;
+                enemy.TakeDamage(playerdataholder.player.GetATK() + playerdataholder.player.GetLv()); // 与ダメージ=攻撃力+Lv
+                playerdataholder.player.TakeDamage(enemy.GetATK() + enemy.GetLv()); //被ダメージ=攻撃力+相手Lv-自分のレベル;
+                IsWaitingInput = false; // 入力待ちを解除
             }
-            if (Input.GetKeyDown(KeyCode.S)) //スキル
+            // Sキーが押された場合
+            else if (Input.GetKeyDown(KeyCode.S)) // スキル
             {
-                enemy.TakeDamage(playerdataholder.player.GetATK() + playerdataholder.player.GetLv() + enemy.GetLv()); //スキル攻撃の場合、さらに敵のレベルを無視
-                turn++;
+                enemy.TakeDamage(playerdataholder.player.GetATK() + playerdataholder.player.GetLv() + enemy.GetLv()); // スキル攻撃の場合、さらに敵のレベルを無視
+                playerdataholder.player.TakeDamage(enemy.GetATK() + enemy.GetLv()); //被ダメージ=攻撃力+相手Lv-自分のレベル;
+                IsWaitingInput = false; // 入力待ちを解除
             }
+
+            // 敵のHPが0以下になった場合
             if (enemy.GetHP() <= 0)
             {
                 enemy.YouAreDEAD();
             }
+            if (playerdataholder.player.GetHP() <= 0)
+            {
+                playerdataholder.player.YouAreDEAD();
+            }
+        }
+        else if (!IsWaitingInput) // 入力待ちが解除されている場合
+        {
+            turn++; // ターンを進める
+            IsWaitingInput = true; // 次のターンのために入力待ちに戻す
         }
     }
 }
