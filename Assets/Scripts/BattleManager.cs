@@ -9,10 +9,11 @@ using UnityEngine;
 public class BattleManager : MonoBehaviour
 {
     //プレイヤーのデータを参照する準備
-    [SerializeField] GameObject ParameterManagerObject;
+    [SerializeField] GameObject GameManagerObject;
     PlayerDataHolder playerdataholder;
 
     GameObject PlayerWeponObj;
+    WeaponController weaponController;
 
     ParameterController.Enemy enemy; //エネミー生成のための宣言　ここで宣言しないとUpdateで使えない
     int turn; //ターン数表示用変数
@@ -24,13 +25,15 @@ public class BattleManager : MonoBehaviour
         enemy = new ParameterController.Enemy("enemy", 2, 20, 5);
         //UnityEngine.Debug.Log("name:" + enemy.name + " " + "Lv:" + enemy.Lv + " " + "HP/ATK:" + enemy.HP + "/" + enemy.ATK);
 
-        playerdataholder = ParameterManagerObject.GetComponent<PlayerDataHolder>();
+        playerdataholder = GameManagerObject.GetComponent<PlayerDataHolder>();
         UnityEngine.Debug.Log("player's HP: " + playerdataholder.player.GetHP() + ", enemy's HP: " + enemy.GetHP());
 
         //プレイヤーの武器を取得して位置を調整
         PlayerWeponObj = playerdataholder.WeaponPrefab;
         PlayerWeponObj.transform.position = new Vector3(2.5f, -2f, 0);
         PlayerWeponObj.transform.Rotate(0, 180f, 0);
+
+        weaponController = PlayerWeponObj.GetComponent<WeaponController>();
 
         turn = 1;
     }
@@ -49,6 +52,8 @@ public class BattleManager : MonoBehaviour
                 enemy.TakeDamage(playerdataholder.player.GetATK() + playerdataholder.player.GetLv()); // 与ダメージ=攻撃力+Lv
                 playerdataholder.player.TakeDamage(enemy.GetATK() + enemy.GetLv()); //被ダメージ=攻撃力+相手Lv-自分のレベル;
                 IsWaitingInput = false; // 入力待ちを解除
+
+                StartCoroutine(weaponController.MoveWeaponCoroutine());
             }
             // Sキーが押された場合
             else if (Input.GetKeyDown(KeyCode.S)) // スキル

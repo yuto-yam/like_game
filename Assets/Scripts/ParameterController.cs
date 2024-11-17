@@ -24,6 +24,8 @@ public class ParameterController : MonoBehaviour
             this.ATK = atk;
         }
 
+        public string Getname() { return Name; }
+
         public int GetLv() { return Lv; }
 
         public int GetHP() { return HP; }
@@ -72,6 +74,7 @@ public class ParameterController : MonoBehaviour
 
     public int BattleCount = 0; //バトルの数を数える
     public int SceneCount = 0; //迷路の階層を数える
+    public Vector2Int cpos; //位置を保存　迷路に戻るときに使用
 
     public enum SKILL
     {
