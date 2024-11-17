@@ -5,12 +5,13 @@ using UnityEngine;
 public class MapGenerator : MonoBehaviour
 {
     [SerializeField] TextAsset mapText;
-    [SerializeField] GameObject[] prefabs; //地面、壁、プレイヤーの順で
+    [SerializeField] GameObject[] prefabs; //地面、壁、プレイヤー、階段の順で
     public enum MAP_TYPE
     {
         GROUND, //0
         WALL,   //1
-        PLAYER  //2
+        PLAYER, //2
+        STAIR   //3
     }
     
     MazeCreator maze; //MazeCreator型の変数を定義
@@ -22,8 +23,8 @@ public class MapGenerator : MonoBehaviour
     }
 
     MAP_TYPE[,] mapTable;
-    float mapSize; //追加　マップのサイズ用変数
-    //追加　中心座標用の変数
+    float mapSize; //マップのサイズ用変数
+    //中心座標用の変数
     Vector2 centerPos;
 
     public int MazeSize_h = 13;
@@ -36,7 +37,7 @@ public class MapGenerator : MonoBehaviour
         _createMap();
     }
 
-    /*
+    
     void _loadMapData()
     {
         string[] mapLines = mapText.text.Split(new[] { '\n', '\r' }, System.StringSplitOptions.RemoveEmptyEntries);
@@ -53,7 +54,7 @@ public class MapGenerator : MonoBehaviour
             }
         }
     }
-    */
+    /* //自動生成用
     void _loadMapData()
     {
         //MazeCreatorをインスタンス化（例として13×13のマップ）
@@ -79,6 +80,7 @@ public class MapGenerator : MonoBehaviour
             }
         }
     }
+    */
 
     void _createMap()
     {
@@ -116,7 +118,7 @@ public class MapGenerator : MonoBehaviour
                 _ground.transform.position = ScreenPos(pos);
                 _map.transform.position = ScreenPos(pos);
                 
-                //修正　座標が1，1なら
+                /*
                 if (x == 1 && y == 1)
                 {
                     //プレイヤーを生成
@@ -126,13 +128,13 @@ public class MapGenerator : MonoBehaviour
                     //プレイヤーの現在ポジションを設定
                     _map.GetComponent<PlayerWalker>().currentPos = pos;
                 }
-                /*
+                */
                 //プレイヤーの初期位置を取得
                 if(mapTable[x, y] == MAP_TYPE.PLAYER)
                 {
                     _map.GetComponent<PlayerWalker>().currentPos = pos;
                 }
-                */
+                
             }
         }
     }

@@ -5,7 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class PlayerWalker : MonoBehaviour
 {
-    Animator animator; //アニメーターの取得
+    //アニメーターの取得
+    Animator animator;
     public enum DIRECTION
     {
         TOP,
@@ -13,8 +14,10 @@ public class PlayerWalker : MonoBehaviour
         DOWN,
         LEFT
     }
-    public DIRECTION directon; //方向
-    public Vector2Int currentPos, nextPos; //現在位置と次の位置を示す変数
+    //方向
+    public DIRECTION directon;
+    //現在位置と次の位置を示す変数
+    public Vector2Int currentPos, nextPos; 
     int[,] move={
         {0, -1}, //TOP
         {1, 0},  //RIGHT
@@ -27,8 +30,10 @@ public class PlayerWalker : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        animator = GetComponent<Animator>(); //起動時にオブジェクトを取得
-        mapGenerator = transform.parent.GetComponent<MapGenerator>(); //MapManagerからMapGeneratorを取得
+        //起動時にオブジェクトを取得
+        animator = GetComponent<Animator>();
+        //MapManagerからMapGeneratorを取得
+        mapGenerator = transform.parent.GetComponent<MapGenerator>();
         directon = DIRECTION.DOWN;
     }
 
@@ -78,10 +83,19 @@ public class PlayerWalker : MonoBehaviour
         _move();
        }
 
-       if (currentPos.x == mapGenerator.MazeSize_h - 2 && currentPos.y == mapGenerator.MazeSize_w -2){
+       if (currentPos.x == mapGenerator.MazeSize_h - 1 && currentPos.y == mapGenerator.MazeSize_w - 1){
         //Debug.Log("Goal!");
         SceneManager.LoadScene("Maze");
        }
+       /*
+        //テスト用
+        if (currentPos.x == 7 && currentPos.y == 7)
+        {
+            //Debug.Log("Goal!");
+            SceneManager.LoadScene("Battle");
+        }
+       */
+
     }
 
     void _move() //移動用関数
