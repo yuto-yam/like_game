@@ -3,14 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
+//using UnityEngine.SceneManagement;
+
 
 
 //敵の生成及びバトルを制御するためのスクリプト
 public class BattleManager : MonoBehaviour
 {
     //プレイヤーのデータを参照する準備
-    [SerializeField] GameObject GameManagerObject;
     PlayerDataHolder playerdataholder;
+    ParameterController parametercontroller;
 
     GameObject PlayerWeponObj;
     WeaponController weaponController;
@@ -22,16 +24,17 @@ public class BattleManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        enemy = new ParameterController.Enemy("enemy", 2, 20, 5);
-        //UnityEngine.Debug.Log("name:" + enemy.name + " " + "Lv:" + enemy.Lv + " " + "HP/ATK:" + enemy.HP + "/" + enemy.ATK);
+        playerdataholder = GameManager.Instance.GetComponent<PlayerDataHolder>();
+        parametercontroller = GameManager.Instance.GetComponent<ParameterController>();
 
-        playerdataholder = GameManagerObject.GetComponent<PlayerDataHolder>();
+        enemy = new ParameterController.Enemy("enemy", 2, 20, 5);
+
         UnityEngine.Debug.Log("player's HP: " + playerdataholder.player.GetHP() + ", enemy's HP: " + enemy.GetHP());
 
         //プレイヤーの武器を取得して位置を調整
-        PlayerWeponObj = playerdataholder.WeaponPrefab;
-        PlayerWeponObj.transform.position = new Vector3(2.5f, -2f, 0);
-        PlayerWeponObj.transform.Rotate(0, 180f, 0);
+        //PlayerWeponObj = playerdataholder.WeaponPrefab;
+        //PlayerWeponObj.transform.position = new Vector3(2.5f, -2f, 0);
+        //PlayerWeponObj.transform.Rotate(0, 180f, 0);
 
         weaponController = PlayerWeponObj.GetComponent<WeaponController>();
 

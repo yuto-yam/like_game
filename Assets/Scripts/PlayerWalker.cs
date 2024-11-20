@@ -25,7 +25,8 @@ public class PlayerWalker : MonoBehaviour
         {-1, 0}  //LEFT
     };
     MapGenerator mapGenerator;
-    
+    ParameterController parametercontroller;
+
 
     // Start is called before the first frame update
     void Start()
@@ -35,6 +36,12 @@ public class PlayerWalker : MonoBehaviour
         //MapManagerからMapGeneratorを取得
         mapGenerator = transform.parent.GetComponent<MapGenerator>();
         directon = DIRECTION.DOWN;
+
+        parametercontroller = GameManager.Instance.GetComponent<ParameterController>();
+        if (parametercontroller == null)
+        {
+            UnityEngine.Debug.LogError("ParameterController が GameManager にアタッチされていません。");
+        }
     }
 
     // Update is called once per frame
@@ -83,18 +90,23 @@ public class PlayerWalker : MonoBehaviour
         _move();
        }
 
-       if (currentPos.x == mapGenerator.MazeSize_h - 1 && currentPos.y == mapGenerator.MazeSize_w - 1){
-        //Debug.Log("Goal!");
-        SceneManager.LoadScene("Maze");
+       if (currentPos.x == mapGenerator.MazeSize_h - 1 && currentPos.y == mapGenerator.MazeSize_w - 1)
+       {
+            //Debug.Log("Goal!");
+            SceneManager.LoadScene("Maze");
        }
-       /*
+       
         //テスト用
         if (currentPos.x == 7 && currentPos.y == 7)
         {
             //Debug.Log("Goal!");
+            parametercontroller.MoveFromScene = SceneManager.GetActiveScene().name;
+            parametercontroller.cpos = currentPos;
+            UnityEngine.Debug.Log(parametercontroller.MoveFromScene);
+            UnityEngine.Debug.Log(parametercontroller.cpos);
             SceneManager.LoadScene("Battle");
         }
-       */
+       
 
     }
 
