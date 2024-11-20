@@ -282,8 +282,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 241476744515770324}
-  - component: {fileID: 1880257861006390944}
   - component: {fileID: 5715327899882474936}
+  - component: {fileID: -60420919780632687}
+  - component: {fileID: 4826975595352233232}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -308,21 +309,6 @@ Transform:
   - {fileID: 3705995391439155766}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1880257861006390944
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6193216367327562616}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6f6e9889e5311574b8e86dc156eb5ffb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  BattleCount: 0
-  SceneCount: 0
-  cpos: {x: 0, y: 0}
 --- !u!114 &5715327899882474936
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -339,6 +325,35 @@ MonoBehaviour:
   WeaponPrefab: {fileID: 8706452465287908328, guid: f3ad5c86cb9e3f544b3b28ad0a938ed0, type: 3}
   StatusPanel: {fileID: 8274287915194373020}
   StatusText: {fileID: 4257183656281890501}
+--- !u!114 &-60420919780632687
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6193216367327562616}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f6e9889e5311574b8e86dc156eb5ffb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  BattleCount: 0
+  SceneCount: 0
+  cpos: {x: 1, y: 1}
+  MoveFromScene: None
+--- !u!114 &4826975595352233232
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6193216367327562616}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2be9b0219986f5b4b92fed6254dceb2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  StatusPanel: {fileID: 0}
 --- !u!1 &8274287915194373020
 GameObject:
   m_ObjectHideFlags: 0

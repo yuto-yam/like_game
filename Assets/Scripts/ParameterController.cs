@@ -3,17 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 //Playerのステータスを保持する用　DDOS想定
 public class ParameterController : MonoBehaviour
 {
     public class Charactor //キャラクター生成用の基底クラス
     {
-        string Name;
-        int Lv;
-        int maxHP;
-        int HP;
-        int ATK;
+        protected string Name;
+        protected int Lv;
+        protected int maxHP;
+        protected int HP;
+        protected int ATK;
 
         public Charactor(string name, int lv, int maxHP, int atk)
         {
@@ -69,12 +70,14 @@ public class ParameterController : MonoBehaviour
         public override void YouAreDEAD() //敵が死亡時
         {
             UnityEngine.Debug.Log("Enemy is down.");
+            SceneManager.LoadScene("Maze");
         }
     }
 
     public int BattleCount = 0; //バトルの数を数える
     public int SceneCount = 0; //迷路の階層を数える
-    public Vector2Int cpos; //位置を保存　迷路に戻るときに使用
+    public Vector2Int cpos = new Vector2Int(1,1); //位置を保存　迷路に戻るときに使用
+    public string MoveFromScene = "None"; //移動時に、居たシーンを覚えておく
 
     public enum SKILL
     {
