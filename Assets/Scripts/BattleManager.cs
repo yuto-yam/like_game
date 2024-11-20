@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Security.Permissions;
 using UnityEngine;
 //using UnityEngine.SceneManagement;
 
@@ -16,6 +17,9 @@ public class BattleManager : MonoBehaviour
 
     GameObject PlayerWeponObj;
     WeaponController weaponController;
+
+    GameObject BattleText;
+    private UnityEngine.UI.Text battletext; //バトル用のテキスト
 
     ParameterController.Enemy enemy; //エネミー生成のための宣言　ここで宣言しないとUpdateで使えない
     int turn; //ターン数表示用変数
@@ -32,11 +36,17 @@ public class BattleManager : MonoBehaviour
         UnityEngine.Debug.Log("player's HP: " + playerdataholder.player.GetHP() + ", enemy's HP: " + enemy.GetHP());
 
         //プレイヤーの武器を取得して位置を調整
-        //PlayerWeponObj = playerdataholder.WeaponPrefab;
+        PlayerWeponObj = playerdataholder.WeaponPrefab;
         //PlayerWeponObj.transform.position = new Vector3(2.5f, -2f, 0);
         //PlayerWeponObj.transform.Rotate(0, 180f, 0);
+        //PlayerWeponObj = GameManager.WeaponPrefab;
 
         weaponController = PlayerWeponObj.GetComponent<WeaponController>();
+
+        BattleText = playerdataholder.BattleText;
+        battletext = BattleText.GetComponent<UnityEngine.UI.Text>();
+        battletext.text = "Test success!";
+
 
         turn = 1;
     }

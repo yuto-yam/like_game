@@ -10,11 +10,11 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
     
-    private PlayerDataHolder playerDataHolder;
-    public GameObject WeaponPrefab; //画面上での武器
-    [SerializeField] GameObject StatusPanel;
-    [SerializeField] GameObject StatusText;
-    private Text statustext; //ステータス描画用のテキスト
+    //private PlayerDataHolder playerDataHolder;
+    //public GameObject WeaponPrefab; //画面上での武器
+    //[SerializeField] GameObject StatusPanel;
+    //[SerializeField] GameObject StatusText;
+    //private Text statustext; //ステータス描画用のテキスト
 
 
     private void Awake()
@@ -23,6 +23,10 @@ public class GameManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
+
+            //playerDataHolder = GetComponent<PlayerDataHolder>();
+            //WeaponPrefab = Instantiate(playerDataHolder.WeaponObj, new Vector3(0, 0, 0), Quaternion.identity);
+
             DontDestroyOnLoad(gameObject); // シーン遷移でも破棄されないようにする
         }
         else
@@ -31,6 +35,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    /*
     private void OnEnable()
     {
         // シーン読み込み完了時に呼び出すイベントを登録
@@ -65,17 +70,15 @@ public class GameManager : MonoBehaviour
         MazeSceneInit();
     }
 
+    private IEnumerator InitializeBattleScene()
+    {
+        yield return null; // シーンロード後1フレーム待つ
+        BattleSceneInit();
+    }
+
     private void MazeSceneInit()
     {
         UnityEngine.Debug.Log("迷路用の初期化処理を実行します。");
-        playerDataHolder = GetComponent<PlayerDataHolder>();
-        if (playerDataHolder == null)
-        {
-            UnityEngine.Debug.LogError("PlayerDataHolder がアタッチされていません！");
-            return; // 処理を中断
-        }
-
-        WeaponPrefab = Instantiate(playerDataHolder.WeaponObj, new Vector3(0, 0, 0), Quaternion.identity);
         WeaponPrefab.transform.SetParent(StatusPanel.transform, false);
         WeaponPrefab.transform.localPosition = new Vector3(0, -30f, -1f);
         WeaponPrefab.transform.localScale = new Vector3(250f, 250f, 250f);
@@ -90,8 +93,13 @@ public class GameManager : MonoBehaviour
     private void BattleSceneInit()
     {
         UnityEngine.Debug.Log("バトル用の初期化処理を実行します。");
-        
+        //プレイヤーの武器を取得して位置を調整
+        //PlayerWeponObj = playerdataholder.WeaponPrefab;
+        WeaponPrefab.transform.position = new Vector3(2.5f, -2f, 0);
+        WeaponPrefab.transform.Rotate(0, 180f, 0);
+
     }
+    */
 
     // Start is called before the first frame update
     void Start()
