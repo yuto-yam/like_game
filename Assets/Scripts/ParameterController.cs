@@ -5,7 +5,7 @@ using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-//Playerのステータスを保持する用　DDOS想定
+//種々の変数を宣言しておくスクリプト
 public class ParameterController : MonoBehaviour
 {
     public class Charactor //キャラクター生成用の基底クラス
@@ -53,7 +53,7 @@ public class ParameterController : MonoBehaviour
         }
     }
 
-    public class Player : Charactor //プレイヤーを管理するためのクラス
+    public class Player : Charactor //プレイヤーを生成し、管理するクラス
     {
         public Player(string name, int lv, int maxHP, int atk) : base(name, lv, maxHP, atk) { }
 
@@ -63,7 +63,7 @@ public class ParameterController : MonoBehaviour
         }
     }
 
-    public class Enemy : Charactor //敵の管理のためのクラス
+    public class Enemy : Charactor //敵を生成し、管理するクラス
     {
         public Enemy(string name, int lv, int maxHP, int atk) : base(name, lv, maxHP, atk) { }
 
@@ -74,29 +74,29 @@ public class ParameterController : MonoBehaviour
         }
     }
 
+    // 各種変数の準備
     public int BattleCount = 0; //バトルの数を数える
-    public int SceneCount = 0; //迷路の階層を数える
+    public int MazeCount = 0; //迷路の階層を数える
     public Vector2Int cpos = new Vector2Int(1,1); //位置を保存　迷路に戻るときに使用
     public string MoveFromScene = "None"; //移動時に、居たシーンを覚えておく
 
+    // 武器につけるスキル
     public enum SKILL
     {
         MAGIC, //レベル防御貫通攻撃
         HEAL   //回復
     }
-    public class Weapon //武器のクラス
+    public class Weapon //武器のクラス、データのみ
     {
         public string Name;
         public int WeaponATK;
         public SKILL WeaponSKILL;
-        //public GameObject WeaponImage;
 
         public Weapon(string name, int watk, SKILL skill)
         {
             this.Name = name;
             this.WeaponATK = watk;
             this.WeaponSKILL = skill;
-            //this.WeaponImage = obj;
         }
 
         public string GetName() { return Name; }
@@ -104,7 +104,5 @@ public class ParameterController : MonoBehaviour
         public int GetWeaponATK() { return WeaponATK; }
 
         public SKILL GetWeaponSKILL() { return WeaponSKILL;}
-
-        //public GameObject GetWeaponImage() { return WeaponImage;}
     }
 }
