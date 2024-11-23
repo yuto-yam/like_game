@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 7521308}
   - component: {fileID: 7521307}
   m_Layer: 0
-  m_Name: MapManager
+  m_Name: MazeManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -157,8 +157,6 @@ MonoBehaviour:
   - {fileID: 6274839439034496095, guid: a27acc722e5da9a428f6cafa77d4e354, type: 3}
   - {fileID: 8527864278178408494, guid: 4d6d03da965ea9e48989912eb37f95c8, type: 3}
   - {fileID: 6756767858084234524, guid: 65fe396b9482ab248bd7f2cbd279f5fe, type: 3}
-  MazeSize_h: 9
-  MazeSize_w: 9
 --- !u!4 &7521308
 Transform:
   m_ObjectHideFlags: 0
