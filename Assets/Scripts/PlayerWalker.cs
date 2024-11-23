@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -42,6 +43,7 @@ public class PlayerWalker : MonoBehaviour
         {
             UnityEngine.Debug.LogError("ParameterController が GameManager にアタッチされていません。");
         }
+        
     }
 
     // Update is called once per frame
@@ -100,10 +102,10 @@ public class PlayerWalker : MonoBehaviour
         if (currentPos.x == 7 && currentPos.y == 7)
         {
             //Debug.Log("Goal!");
-            parametercontroller.MoveFromScene = SceneManager.GetActiveScene().name;
+            //parametercontroller.MoveFromScene = SceneManager.GetActiveScene().name;
             parametercontroller.cpos = currentPos;
-            UnityEngine.Debug.Log(parametercontroller.MoveFromScene);
-            UnityEngine.Debug.Log(parametercontroller.cpos);
+            //UnityEngine.Debug.Log(parametercontroller.MoveFromScene);
+            //UnityEngine.Debug.Log(parametercontroller.cpos);
             SceneManager.LoadScene("Battle");
         }
        
@@ -117,7 +119,7 @@ public class PlayerWalker : MonoBehaviour
         {
             transform.localPosition = mapGenerator.ScreenPos(nextPos);
             currentPos = nextPos;
-            Debug.Log(currentPos);
+            UnityEngine.Debug.Log(currentPos);
         }
     }
 }
