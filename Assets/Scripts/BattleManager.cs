@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Security.Permissions;
 using UnityEngine;
-//using UnityEngine.SceneManagement;
+using UnityEngine.SceneManagement;
 
 
 
@@ -79,6 +79,7 @@ public class BattleManager : MonoBehaviour
             // 敵のHPが0以下になった場合
             if (enemy.GetHP() <= 0)
             {
+                parametercontroller.MoveFromScene = SceneManager.GetActiveScene().name;
                 enemy.YouAreDEAD();
             }
             if (playerdataholder.player.GetHP() <= 0)

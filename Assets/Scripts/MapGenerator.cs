@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 
 public class MapGenerator : MonoBehaviour
 {
-    [SerializeField] TextAsset mapText;
+    [SerializeField] TextAsset mapText; //mapのデータを格納するためのテキスト(リスト)
     [SerializeField] GameObject[] prefabs; //地面、壁、プレイヤー、階段の順で
-    public enum MAP_TYPE
+    public enum MAP_TYPE //上のprefabの順でMAP_TYPEを定義
     {
         GROUND, //0
         WALL,   //1
@@ -15,30 +16,34 @@ public class MapGenerator : MonoBehaviour
     }
     
     MazeCreator maze; //MazeCreator型の変数を定義
+    public int MazeSize_w;
+    public int MazeSize_h;
     int[,] mazeDatas; //迷路データ用にint型の二次元配列の変数を定義
+
+    MAP_TYPE[,] mapTable;
+    float mapSize; //マップのサイズ用変数
+    Vector2 centerPos; //中心座標用の変数
+
+    [SerializeField] GameObject player;
+
+    ParameterController parametercontroller;
+    private Vector2Int Cpos;
 
     public MAP_TYPE GetNextMapType(Vector2Int _pos) //MAP_TYPEを返す関数
     {
         return mapTable[_pos.x, _pos.y];
     }
 
-    MAP_TYPE[,] mapTable;
-    float mapSize; //マップのサイズ用変数
-    //中心座標用の変数
-    Vector2 centerPos;
-
-    public int MazeSize_h = 13;
-    public int MazeSize_w = 13;
-
     // Start is called before the first frame update
     void Start()
     {
+        parametercontroller = GameManager.Instance.GetComponent<ParameterController>();
         _loadMapData();
         _createMap();
     }
 
     
-    void _loadMapData()
+    void _loadMapData() //テキストを行列に変換
     {
         string[] mapLines = mapText.text.Split(new[] { '\n', '\r' }, System.StringSplitOptions.RemoveEmptyEntries);
         int row = mapLines.Length; //行の数
@@ -113,12 +118,14 @@ public class MapGenerator : MonoBehaviour
             for(int x = 0;x < mapTable.GetLength(0); x++)
             {
                 Vector2Int pos = new Vector2Int(x, y);
+                //地面を先に敷く
                 GameObject _ground  = Instantiate(prefabs[(int)MAP_TYPE.GROUND], transform);
-                GameObject _map = Instantiate(prefabs[(int)mapTable[x,y]], transform);
                 _ground.transform.position = ScreenPos(pos);
+                //各位置に対応するPrefabを配置
+                GameObject _map = Instantiate(prefabs[(int)mapTable[x,y]], transform);
                 _map.transform.position = ScreenPos(pos);
-                
-                /*
+
+                /* //自動生成用
                 if (x == 1 && y == 1)
                 {
                     //プレイヤーを生成
@@ -129,12 +136,23 @@ public class MapGenerator : MonoBehaviour
                     _map.GetComponent<PlayerWalker>().currentPos = pos;
                 }
                 */
-                //プレイヤーの初期位置を取得
-                if(mapTable[x, y] == MAP_TYPE.PLAYER)
+
+                //プレイヤーの位置を取得して配置
+                //ループの最後に配置
+                if (x == mapTable.GetLength(0) -1 && y == mapTable.GetLength(1) -1)
                 {
-                    _map.GetComponent<PlayerWalker>().currentPos = pos;
+                    if (parametercontroller.MoveFromScene == "Battle")
+                    {
+                        Cpos = parametercontroller.cpos;
+                    }
+                    else
+                    {
+                        Cpos = new Vector2Int(1, 1);
+                    }
+                    _map = Instantiate(prefabs[2], transform);
+                    _map.transform.position = ScreenPos(Cpos);
+                    _map.GetComponent<PlayerWalker>().currentPos = Cpos;
                 }
-                
             }
         }
     }
