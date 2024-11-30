@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Battle.unity
     guid: 135e5bc1c9dc7fb46a251dabf53128c5
+  - enabled: 1
+    path: Assets/Scenes/Drop.unity
+    guid: 1ffa9630d36a8c744a16763a6bb0d3d2
   m_configObjects: {}

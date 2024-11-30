@@ -91,19 +91,30 @@ public class PlayerWalker : MonoBehaviour
        }
 
        // ゴールしたら、次の迷路へ
-       if (currentPos.x == mapGenerator.mapTable.GetLength(0) - 1 && currentPos.y == mapGenerator.mapTable.GetLength(1) - 1)
+       if (currentPos.x == mapGenerator.mapTable.GetLength(0) - 2 && currentPos.y == mapGenerator.mapTable.GetLength(1) - 2)
        {
             parametercontroller.MazeCount += 1;
             // ここにボス戦用の処理を書く
-            SceneManager.LoadScene("Maze");
+            if (parametercontroller.MazeCount%3 == 0)
+            {
+                // 迷路3つごとにボス戦へ
+                ParameterController.IsBossBatlle = true;
+                SceneManager.LoadScene("Battle");
+            }
+            else
+            {
+                SceneManager.LoadScene("Maze");
+            }
        }
        
+        /*
         //Battleシーンへ遷移する
         if (currentPos.x == 7 && currentPos.y == 7) //一時的に位置を固定
         {
             parametercontroller.cpos = currentPos; //いた位置を記憶
             SceneManager.LoadScene("Battle");
         }
+        */
        
 
     }

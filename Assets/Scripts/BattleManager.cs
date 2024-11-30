@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Security.Permissions;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 
@@ -18,8 +19,16 @@ public class BattleManager : MonoBehaviour
     GameObject PlayerWeponObj;
     WeaponController weaponController;
     // バトル用テキスト
-    GameObject BattleText;
-    private UnityEngine.UI.Text battletext; 
+    private GameObject BattleText;
+    private UnityEngine.UI.Text battletext;
+    // ダメージ、回復、レベルアップを表示するテキストを用意
+    [SerializeField] GameObject NumText_Enemy;
+    private UnityEngine.UI.Text numtext_enemy;
+
+    [SerializeField] GameObject NumText_Player;
+    private UnityEngine.UI.Text numtext_player;
+
+    private Coroutine cuurentCoroutine; // 表示テキスト管理用コルーチン
 
     ParameterController.Enemy enemy; // エネミー生成のための宣言　ここで宣言しないとUpdateで使えない
     int turn; // ターン数
@@ -43,9 +52,20 @@ public class BattleManager : MonoBehaviour
         battletext = BattleText.GetComponent<UnityEngine.UI.Text>();
         battletext.text = "Test success!";
 
+        NumText_Enemy = playerdataholder.NumText_E;
+        numtext_enemy = playerdataholder.NumText_E.GetComponent<UnityEngine.UI.Text>();
+        numtext_enemy.text = "0!";
+        NumText_Player = playerdataholder.NumText_P;
+        numtext_player = playerdataholder.NumText_P.GetComponent<UnityEngine.UI.Text>();
+        numtext_player.text = "0!";
+        
+
         turn = 1; // ターン数初期化
+        // バトル開始
+        StartCoroutine(BattleTurnCoroutine());
     }
 
+    /*
     // Update is called once per frame
     void Update()
     {
@@ -53,6 +73,7 @@ public class BattleManager : MonoBehaviour
         if (playerdataholder.player.GetHP() > 0 && enemy.GetHP() > 0 && IsWaitingInput)
         {
             UnityEngine.Debug.Log("Turn: " + turn);
+            battletext.text = "ターン" + turn + " " + playerdataholder.player.Getname() + " はどうする？" + " A:攻撃/S:スキル";
             // 戦闘用処理を走らせる
 
             // Aキーが押された場合
@@ -60,9 +81,12 @@ public class BattleManager : MonoBehaviour
             {
                 enemy.TakeDamage(playerdataholder.player.GetATK() + playerdataholder.player.GetLv()); // 与ダメージ=攻撃力+Lv
                 playerdataholder.player.TakeDamage(enemy.GetATK() + enemy.GetLv()); // 被ダメージ=攻撃力+相手Lv-自分のレベル;
-                IsWaitingInput = false; // 入力待ちを解除
                 // 武器を振る
                 StartCoroutine(weaponController.MoveWeaponCoroutine());
+                // テキストとダメージ表示
+                DisplayText(battletext, playerdataholder.player.Getname() + "の攻撃！", 120f);
+
+                IsWaitingInput = false; // 入力待ちを解除
             }
             // Sキーが押された場合
             else if (Input.GetKeyDown(KeyCode.S)) // スキル
@@ -94,5 +118,104 @@ public class BattleManager : MonoBehaviour
             turn++; // ターンを進める
             IsWaitingInput = true; // 次のターンのために入力待ちに戻す
         }
+    }
+    */
+
+    // ターン管理用コルーチン
+    private IEnumerator BattleTurnCoroutine()
+    {
+        while (playerdataholder.player.GetHP() > 0 && enemy.GetHP() > 0)
+        {
+            // プレイヤーターンの開始
+            yield return StartCoroutine(PlayerTurn());
+
+            // 敵が倒れた場合は終了
+            if (enemy.GetHP() <= 0) break;
+
+            // 敵ターンの処理（例として簡略化）
+            yield return StartCoroutine(EnemyTurn());
+
+            // プレイヤーが倒れた場合は終了
+            if (playerdataholder.player.GetHP() <= 0) break;
+
+            // ターンを進める
+            turn++;
+        }
+
+        // 結果の処理
+        if (playerdataholder.player.GetHP() <= 0)
+        {
+            battletext.text = "Game Over!";
+            playerdataholder.player.YouAreDEAD();
+        }
+        else if (enemy.GetHP() <= 0)
+        {
+            battletext.text = "Victory!";
+            enemy.YouAreDEAD();
+        }
+    }
+
+    // プレイヤーターン処理
+    private IEnumerator PlayerTurn()
+    {
+        battletext.text = $"ターン {turn}: {playerdataholder.player.Getname()} はどうする？ A:攻撃 / S:スキル";
+        yield return new WaitForSeconds(1f); // 表示時間調整
+
+        bool actionTaken = false;
+        while (!actionTaken)
+        {
+            if (Input.GetKeyDown(KeyCode.A)) // 通常攻撃
+            {
+                // 攻撃処理
+                enemy.TakeDamage(playerdataholder.player.GetATK() + playerdataholder.player.GetLv());
+                playerdataholder.player.TakeDamage(enemy.GetATK() + enemy.GetLv());
+                battletext.text = $"{playerdataholder.player.Getname()} の攻撃！";
+                StartCoroutine(weaponController.MoveWeaponCoroutine());
+                yield return new WaitForSeconds(1f);
+                actionTaken = true;
+            }
+            else if (Input.GetKeyDown(KeyCode.S)) // スキル攻撃
+            {
+                // スキル処理
+                enemy.TakeDamage(playerdataholder.player.GetATK() + playerdataholder.player.GetLv() + enemy.GetLv());
+                battletext.text = $"{playerdataholder.player.Getname()} のスキル攻撃！";
+                yield return new WaitForSeconds(1f);
+                actionTaken = true;
+            }
+
+            yield return null; // 入力待機
+        }
+    }
+
+    // 敵ターン処理
+    private IEnumerator EnemyTurn()
+    {
+        battletext.text = "敵の攻撃！";
+        yield return new WaitForSeconds(1f);
+
+        playerdataholder.player.TakeDamage(enemy.GetATK());
+        yield return new WaitForSeconds(1f);
+    }
+
+
+    public void DisplayText (UnityEngine.UI.Text uitext, string messeage, float duration = 1f)
+    {
+        // 表示しているものを停止
+        if (cuurentCoroutine != null)
+        {
+            StopCoroutine(cuurentCoroutine); 
+        }
+        // 新しく表示
+        cuurentCoroutine = StartCoroutine(DisplayTextCoroutine(uitext, messeage, duration));
+    }
+
+    private IEnumerator DisplayTextCoroutine(UnityEngine.UI.Text uitext, string messeage, float duration)
+    {
+        uitext.text = messeage;
+        uitext.enabled = true;
+
+        yield return new WaitForSeconds(duration);
+
+        uitext.enabled = false;
     }
 }
