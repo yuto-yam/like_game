@@ -28,7 +28,7 @@ public class PlayerWalker : MonoBehaviour
     };
     // 各種スクリプト取得
     MapGenerator mapGenerator;
-    ParameterController parametercontroller;
+    ParameterDifiner parameterdifiner;
 
 
     // Start is called before the first frame update
@@ -40,7 +40,7 @@ public class PlayerWalker : MonoBehaviour
         mapGenerator = transform.parent.GetComponent<MapGenerator>();
         directon = DIRECTION.DOWN;
 
-        parametercontroller = GameManager.Instance.GetComponent<ParameterController>();
+        parameterdifiner = GameManager.Instance.GetComponent<ParameterDifiner>();
         
     }
 
@@ -93,9 +93,9 @@ public class PlayerWalker : MonoBehaviour
        // ゴールしたら、次の迷路へ
        if (currentPos.x == mapGenerator.mapTable.GetLength(0) - 2 && currentPos.y == mapGenerator.mapTable.GetLength(1) - 2)
        {
-            parametercontroller.MazeCount += 1;
+            parameterdifiner.MazeCount += 1;
             // ここにボス戦用の処理を書く
-            if (parametercontroller.MazeCount%3 == 0)
+            if (parameterdifiner.MazeCount % 3 == 0)
             {
                 // 迷路3つごとにボス戦へ
                 ParameterController.IsBossBatlle = true;

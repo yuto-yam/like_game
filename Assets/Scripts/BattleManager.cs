@@ -8,62 +8,57 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 
-
 // 敵の生成及びバトルを制御するためのスクリプト
 public class BattleManager : MonoBehaviour
-{
+{   
     // プレイヤーのデータを参照する準備
     PlayerDataHolder playerdataholder;
-    ParameterController parametercontroller;
+    ParameterDifiner parameterdifiner;
     // 武器を参照する準備
     GameObject PlayerWeponObj;
     WeaponController weaponController;
-    // バトル用テキスト
-    private GameObject BattleText;
-    private UnityEngine.UI.Text battletext;
-    // ダメージ、回復、レベルアップを表示するテキストを用意
-    [SerializeField] GameObject NumText_Enemy;
-    private UnityEngine.UI.Text numtext_enemy;
 
-    [SerializeField] GameObject NumText_Player;
-    private UnityEngine.UI.Text numtext_player;
+    // バトル用テキスト
+    private UnityEngine.UI.Text generaltext;
+    private UnityEngine.UI.Text numtext_e;
+    private UnityEngine.UI.Text numtext_p;
 
     private Coroutine cuurentCoroutine; // 表示テキスト管理用コルーチン
 
-    ParameterController.Enemy enemy; // エネミー生成のための宣言　ここで宣言しないとUpdateで使えない
-    int turn; // ターン数
-    bool IsWaitingInput = true; // 入力待ちのためのbool
+    ParameterDifiner.Enemy enemy; // エネミー生成のための宣言　ここで宣言しないとUpdateで使えない
+
+    private int turn; // ターン数
+    private int damage; // damageを保持する
+
 
     // Start is called before the first frame update
     void Start()
     {
         // プレイヤーデータの取得
         playerdataholder = GameManager.Instance.GetComponent<PlayerDataHolder>();
-        parametercontroller = GameManager.Instance.GetComponent<ParameterController>();
+        parameterdifiner = GameManager.Instance.GetComponent<ParameterDifiner>();
+
         // 敵を生成
-        enemy = new ParameterController.Enemy("enemy", 2, 20, 5);
+        enemy = new ParameterDifiner.Enemy("enemy", 2, 20, 5, parameterdifiner);
         UnityEngine.Debug.Log("player's HP: " + playerdataholder.player.GetHP() + ", enemy's HP: " + enemy.GetHP());
         // プレイヤーの武器を取得
         PlayerWeponObj = playerdataholder.WeaponPrefab;
         // 武器を動かすスクリプトを取得
         weaponController = PlayerWeponObj.GetComponent<WeaponController>();
-        // テキスト表示の準備
-        BattleText = playerdataholder.BattleText;
-        battletext = BattleText.GetComponent<UnityEngine.UI.Text>();
-        battletext.text = "Test success!";
 
-        NumText_Enemy = playerdataholder.NumText_E;
-        numtext_enemy = playerdataholder.NumText_E.GetComponent<UnityEngine.UI.Text>();
-        numtext_enemy.text = "0!";
-        NumText_Player = playerdataholder.NumText_P;
-        numtext_player = playerdataholder.NumText_P.GetComponent<UnityEngine.UI.Text>();
-        numtext_player.text = "0!";
+        // テキスト表示の準備
+        generaltext = playerdataholder.GeneralText.GetComponent<UnityEngine.UI.Text>();
+        generaltext.text = "Test success!";
+        numtext_e = playerdataholder.NumText_E.GetComponent<UnityEngine.UI.Text>();
+        numtext_e.text = "0!";
+        numtext_p = playerdataholder.NumText_P.GetComponent<UnityEngine.UI.Text>();
+        numtext_p.text = "0!";
         
 
         turn = 1; // ターン数初期化
-        // バトル開始
-        StartCoroutine(BattleTurnCoroutine());
+        StartCoroutine(BattleTurnCoroutine()); // バトル開始
     }
+    
 
     /*
     // Update is called once per frame
@@ -121,6 +116,7 @@ public class BattleManager : MonoBehaviour
     }
     */
 
+
     // ターン管理用コルーチン
     private IEnumerator BattleTurnCoroutine()
     {
@@ -132,7 +128,7 @@ public class BattleManager : MonoBehaviour
             // 敵が倒れた場合は終了
             if (enemy.GetHP() <= 0) break;
 
-            // 敵ターンの処理（例として簡略化）
+            // 敵ターンの処理
             yield return StartCoroutine(EnemyTurn());
 
             // プレイヤーが倒れた場合は終了
@@ -145,12 +141,12 @@ public class BattleManager : MonoBehaviour
         // 結果の処理
         if (playerdataholder.player.GetHP() <= 0)
         {
-            battletext.text = "Game Over!";
+            generaltext.text = "負けてしまった！";
             playerdataholder.player.YouAreDEAD();
         }
         else if (enemy.GetHP() <= 0)
         {
-            battletext.text = "Victory!";
+            generaltext.text = enemy.GetName() + "を倒した!";
             enemy.YouAreDEAD();
         }
     }
@@ -158,29 +154,32 @@ public class BattleManager : MonoBehaviour
     // プレイヤーターン処理
     private IEnumerator PlayerTurn()
     {
-        battletext.text = $"ターン {turn}: {playerdataholder.player.Getname()} はどうする？ A:攻撃 / S:スキル";
-        yield return new WaitForSeconds(1f); // 表示時間調整
+        generaltext.text = $"ターン {turn}: {playerdataholder.player.GetName()} はどうする？    A:攻撃/S:スキル";
+        yield return new WaitForSeconds(0.2f); // 表示時間調整
 
-        bool actionTaken = false;
-        while (!actionTaken)
+        bool IsWaiting = false; // 戦闘用フラグ
+        while (!IsWaiting)
         {
             if (Input.GetKeyDown(KeyCode.A)) // 通常攻撃
             {
                 // 攻撃処理
                 enemy.TakeDamage(playerdataholder.player.GetATK() + playerdataholder.player.GetLv());
-                playerdataholder.player.TakeDamage(enemy.GetATK() + enemy.GetLv());
-                battletext.text = $"{playerdataholder.player.Getname()} の攻撃！";
+                damage = playerdataholder.player.TakeDamage(playerdataholder.player.GetATK() + playerdataholder.player.GetLv());
+                generaltext.text = $"{playerdataholder.player.GetName()} の攻撃！";
+                numtext_e.text = (-damage).ToString();
+                numtext_e.color = Color.red;
                 StartCoroutine(weaponController.MoveWeaponCoroutine());
-                yield return new WaitForSeconds(1f);
-                actionTaken = true;
+                yield return new WaitForSeconds(0.5f);
+                numtext_e.text = "";
+                IsWaiting = true;
             }
             else if (Input.GetKeyDown(KeyCode.S)) // スキル攻撃
             {
                 // スキル処理
                 enemy.TakeDamage(playerdataholder.player.GetATK() + playerdataholder.player.GetLv() + enemy.GetLv());
-                battletext.text = $"{playerdataholder.player.Getname()} のスキル攻撃！";
-                yield return new WaitForSeconds(1f);
-                actionTaken = true;
+                generaltext.text = $"{playerdataholder.player.GetName()} のスキル攻撃！";
+                yield return new WaitForSeconds(0.5f);
+                IsWaiting = true;
             }
 
             yield return null; // 入力待機
@@ -190,14 +189,17 @@ public class BattleManager : MonoBehaviour
     // 敵ターン処理
     private IEnumerator EnemyTurn()
     {
-        battletext.text = "敵の攻撃！";
+        generaltext.text = "敵の攻撃！";
         yield return new WaitForSeconds(1f);
 
-        playerdataholder.player.TakeDamage(enemy.GetATK());
-        yield return new WaitForSeconds(1f);
+        damage = playerdataholder.player.TakeDamage(enemy.GetATK());
+        numtext_p.text = (-damage).ToString();
+        numtext_p.color = Color.red;
+        yield return new WaitForSeconds(0.5f);
+        numtext_p.text = "";
     }
 
-
+    /*
     public void DisplayText (UnityEngine.UI.Text uitext, string messeage, float duration = 1f)
     {
         // 表示しているものを停止
@@ -218,4 +220,5 @@ public class BattleManager : MonoBehaviour
 
         uitext.enabled = false;
     }
+    */
 }

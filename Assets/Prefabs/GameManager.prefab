@@ -517,8 +517,8 @@ RectTransform:
   m_Children:
   - {fileID: 2714160836370808533}
   - {fileID: 9157321646528276793}
-  - {fileID: 7088431462398184015}
   - {fileID: 7334639906916911984}
+  - {fileID: 7088431462398184015}
   m_Father: {fileID: 241476744515770324}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -720,13 +720,13 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5424873406435027626}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.27450982, g: 0.27450982, b: 0.27450982, a: 1}
+  m_Color: {r: 0.3137255, g: 0.3137255, b: 0.3137255, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -734,7 +734,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -752,9 +752,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 241476744515770324}
-  - component: {fileID: 5715327899882474936}
-  - component: {fileID: -60420919780632687}
-  - component: {fileID: 4826975595352233232}
+  - component: {fileID: 6078237383604475998}
+  - component: {fileID: 2176835778393575113}
+  - component: {fileID: 7798142080202443094}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -779,7 +779,7 @@ Transform:
   - {fileID: 3705995391439155766}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5715327899882474936
+--- !u!114 &6078237383604475998
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -788,22 +788,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 6193216367327562616}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0c002ab4f52e33041b483696061a684f, type: 3}
+  m_Script: {fileID: 11500000, guid: 2be9b0219986f5b4b92fed6254dceb2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  WeaponObj: {fileID: 8706452465287908328, guid: f3ad5c86cb9e3f544b3b28ad0a938ed0, type: 3}
-  WeaponPrefab: {fileID: 8706452465287908328, guid: f3ad5c86cb9e3f544b3b28ad0a938ed0, type: 3}
-  NewWeaponPrefab: {fileID: 0}
-  DropPanel: {fileID: 5010448859069356874}
-  OldDropText: {fileID: 8226043496267616250}
-  NewDropText: {fileID: 2689808115743848795}
-  StatusPanel: {fileID: 8274287915194373020}
-  StatusText: {fileID: 4257183656281890501}
-  BattlePanel: {fileID: 3160151986535329108}
-  BattleText: {fileID: 3914909594362482537}
-  NumText_E: {fileID: 4039562026008456493}
-  NumText_P: {fileID: 6324250421181333171}
---- !u!114 &-60420919780632687
+--- !u!114 &2176835778393575113
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -817,9 +805,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BattleCount: 0
   MazeCount: 0
-  cpos: {x: 1, y: 1}
+  IsBossBatlle: 0
   MoveFromScene: None
---- !u!114 &4826975595352233232
+  cpos: {x: 1, y: 1}
+  WeaponSpriteList: []
+--- !u!114 &7798142080202443094
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -828,9 +818,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 6193216367327562616}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2be9b0219986f5b4b92fed6254dceb2a, type: 3}
+  m_Script: {fileID: 11500000, guid: 0c002ab4f52e33041b483696061a684f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TmpWeaponObj: {fileID: 8706452465287908328, guid: f3ad5c86cb9e3f544b3b28ad0a938ed0, type: 3}
+  WeaponColor: {fileID: 0}
+  WeaponPrefab: {fileID: 8706452465287908328, guid: f3ad5c86cb9e3f544b3b28ad0a938ed0, type: 3}
+  NewWeaponPrefab: {fileID: 0}
+  StatusPanel: {fileID: 8274287915194373020}
+  StatusText: {fileID: 4257183656281890501}
+  GeneralPanel: {fileID: 3160151986535329108}
+  GeneralText: {fileID: 3914909594362482537}
+  BattlePanel: {fileID: 5424873406435027626}
+  NumText_E: {fileID: 4039562026008456493}
+  NumText_P: {fileID: 6324250421181333171}
+  DropPanel: {fileID: 5010448859069356874}
+  OldDropText: {fileID: 8226043496267616250}
+  NewDropText: {fileID: 2689808115743848795}
 --- !u!1 &6324250421181333171
 GameObject:
   m_ObjectHideFlags: 0
@@ -1025,7 +1029,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -375, y: 200}
+  m_AnchoredPosition: {x: -480, y: 250}
   m_SizeDelta: {x: 250, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &5784618295290283287
