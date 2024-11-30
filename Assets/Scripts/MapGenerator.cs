@@ -23,7 +23,7 @@ public class MapGenerator : MonoBehaviour
     private float mapSize; // マップのサイズ用変数
     private Vector2 centerPos; // 中心座標用の変数
 
-    ParameterController parametercontroller; // プレイヤーデータを取得
+    ParameterDifiner parameterdifiner; // プレイヤーデータを取得
     private Vector2Int Cpos; // プレイヤー位置を取得
 
     public MAP_TYPE GetNextMapType(Vector2Int _pos) // MAP_TYPEを返す関数
@@ -34,7 +34,7 @@ public class MapGenerator : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        parametercontroller = GameManager.Instance.GetComponent<ParameterController>();
+        parameterdifiner = GameManager.Instance.GetComponent<ParameterDifiner>();
         _loadMapData(); // テキストデータを変換
         _createMap();   // 変換したデータを元にパーツを配置
     }
@@ -127,9 +127,9 @@ public class MapGenerator : MonoBehaviour
                 if (x == mapTable.GetLength(0) -1 && y == mapTable.GetLength(1) -1)
                 {
                     // Battleシーンから帰ってきた場合
-                    if (parametercontroller.MoveFromScene == "Battle")
+                    if (parameterdifiner.MoveFromScene == "Battle")
                     {
-                        Cpos = parametercontroller.cpos; // 元いた位置
+                        Cpos = parameterdifiner.CPOS; // 元いた位置
                     }
                     // それ以外
                     else
