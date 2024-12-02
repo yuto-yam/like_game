@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 // 新しい武器に更新するかどうかを制御するスクリプト
 public class DropRenewer : MonoBehaviour
 {
+    ParameterDifiner parameterdifiner;
     PlayerDataHolder playerdataholder;
 
     [SerializeField] GameObject CurrentWeaponPrefab;
@@ -14,10 +15,13 @@ public class DropRenewer : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        parameterdifiner = GameManager.Instance.GetComponent<ParameterDifiner>();
         playerdataholder = GameManager.Instance.GetComponent<PlayerDataHolder>();
 
         CurrentWeaponPrefab = playerdataholder.WeaponPrefab;
         NewWeaponPrefab = playerdataholder.NewWeaponPrefab;
+
+        parameterdifiner.IsFromBattle = false;
     }
 
     // Update is called once per frame

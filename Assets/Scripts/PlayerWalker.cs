@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -29,6 +30,8 @@ public class PlayerWalker : MonoBehaviour
     // 各種スクリプト取得
     MapGenerator mapGenerator;
     ParameterDifiner parameterdifiner;
+
+    [SerializeField] float Encounter = 0; // 敵との遭遇危険度 1以上でエンカウント
 
 
     // Start is called before the first frame update
@@ -92,13 +95,13 @@ public class PlayerWalker : MonoBehaviour
 
        // ゴールしたら、次の迷路へ
        if (currentPos.x == mapGenerator.mapTable.GetLength(0) - 2 && currentPos.y == mapGenerator.mapTable.GetLength(1) - 2)
-       {
+       {    
             parameterdifiner.MazeCount += 1;
-            // ここにボス戦用の処理を書く
-            if (parameterdifiner.MazeCount % 3 == 0)
+            
+            // 迷路3つごとにボス戦へ
+            if (parameterdifiner.MazeCount %3 == 0)
             {
-                // 迷路3つごとにボス戦へ
-                ParameterController.IsBossBatlle = true;
+                parameterdifiner.IsBossBattle = true;
                 SceneManager.LoadScene("Battle");
             }
             else
@@ -106,15 +109,12 @@ public class PlayerWalker : MonoBehaviour
                 SceneManager.LoadScene("Maze");
             }
        }
-       
-        /*
-        //Battleシーンへ遷移する
-        if (currentPos.x == 7 && currentPos.y == 7) //一時的に位置を固定
-        {
-            parametercontroller.cpos = currentPos; //いた位置を記憶
+       else if (Encounter >= 1f) //ゴール以外で、敵との遭遇危険度が1を超えたら戦闘へ
+       {
+            parameterdifiner.CPOS = currentPos;
             SceneManager.LoadScene("Battle");
-        }
-        */
+       }
+       
        
 
     }
@@ -126,6 +126,13 @@ public class PlayerWalker : MonoBehaviour
         {
             transform.localPosition = mapGenerator.ScreenPos(nextPos);
             currentPos = nextPos;
+
+            // 敵との遭遇率を計上
+            float tmp_enc = ((float)currentPos.x + (float)currentPos.y) /
+                             ((float)mapGenerator.mapTable.GetLength(0) * (float)mapGenerator.mapTable.GetLength(1)); // 現在座標の和をマス目の数で正規化、端の方が敵が出やすい
+            Encounter += tmp_enc * UnityEngine.Random.Range(parameterdifiner.Encount_Rate, 1.0f); // 敵に出会いすぎないように補正、9*9で1回あるかどうかくらい
+
+            UnityEngine.Debug.Log(Encounter);
             UnityEngine.Debug.Log(currentPos);
         }
     }

@@ -18,8 +18,8 @@ public class PlayerDataHolder : MonoBehaviour
 
     // 画面上の武器
     public GameObject TmpWeaponObj; // プレハブ生成元のオブジェクト
-    public Renderer WeaponColor;    // オブジェクトの色を変える 
     public GameObject WeaponPrefab; // 画面上での武器
+    public Renderer WeaponColor;    // 武器の色を指定 
 
     // ドロップ用
     public ParameterDifiner.Weapon new_weapon;
@@ -47,11 +47,10 @@ public class PlayerDataHolder : MonoBehaviour
     private UnityEngine.UI.Text newdroptext;
 
 
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
         //プレイヤー初期宣言(名前、レベル、HP、攻撃力)
-        player = new ParameterDifiner.Player("yu-sya", 1, 50, 10);
+        player = new ParameterDifiner.Player("yu-sya", 1, 0, 50, 10);
 
         //武器初期宣言(名前、攻撃力、スキル)
         player_weapon = new ParameterDifiner.Weapon("tmp_sword", 10, ParameterDifiner.SKILL.MAGIC);
@@ -59,16 +58,33 @@ public class PlayerDataHolder : MonoBehaviour
         WeaponPrefab.transform.SetParent(StatusPanel.transform, false);
         WeaponPrefab.transform.localScale = new Vector3(250f, 250f, 250f);
 
+        // ステータステキストを取得
+        statustext = StatusText.GetComponent<UnityEngine.UI.Text>();
     }
+    
+    // Start is called before the first frame update
+    void Start()
+    {
+
+    }
+    
 
     //Update is called once per frame
     void Update()
     {
         //ステータステキストを表示
-        statustext = StatusText.GetComponent<UnityEngine.UI.Text>();
-        statustext.text = "Name:" + player.GetName() + "  Lv:" + player.GetLv() + "\n"
-                           + "HP:" + player.GetHP() + "/" + player.GetMaxHP() + "  ATK:" + player.GetATK() + "\n"
-                           + "Weapon:" + player_weapon.GetWeaponName();
+        statustext.text = string.Format(
+            "Name:{0,-5}  Lv:{1,-3}  Exp:{2,-3}\n" +
+            "HP:{3,3}/{4,-3}  ATK:{5,-3}\n" +
+            "Weapon:{6}",
+            player.GetName(),
+            player.GetLv(),
+            player.GetExp(),
+            player.GetHP(),
+            player.GetMaxHP(),
+            player.GetATK(),
+            player_weapon.GetWeaponName()
+        );
 
     }
 
@@ -92,7 +108,7 @@ public class PlayerDataHolder : MonoBehaviour
         // シーンごとに異なる処理を実行
         if (scene.name == "Maze")
         {
-            StartCoroutine(InitializeMazeScene());
+            MazeSceneInit();
         }
         else if (scene.name == "Battle")
         {
@@ -102,25 +118,6 @@ public class PlayerDataHolder : MonoBehaviour
         {
             DropSceneInit();
         }
-    }
-
-    private IEnumerator InitializeMazeScene()
-    {
-        yield return null; // シーンロード後1フレーム待つ
-        MazeSceneInit();
-    }
-
-    private IEnumerator InitializeBattleScene()
-    {
-        yield return null; // シーンロード後1フレーム待つ
-        //yield return new WaitForSeconds(3f); // シーンロード後3秒待つ
-        BattleSceneInit();
-    }
-
-    private IEnumerator InitializeDropScene()
-    {
-        yield return null; // シーンロード後1フレーム待つ
-        DropSceneInit();
     }
 
     // Mazeシーン読み込み時にUI系オブジェクトの位置を調整
