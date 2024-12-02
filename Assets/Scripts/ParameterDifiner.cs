@@ -11,8 +11,9 @@ public class ParameterDifiner : MonoBehaviour
     // 各種変数の準備
     public int BattleCount = 0; //バトルの数
     public int MazeCount = 0; //迷路の階層数
-    public bool IsBossBatlle = false; // ボス戦を判定するフラグ
-    public string MoveFromScene = "None"; //移動前のシーン
+    public float Encount_Rate = 0.5f; // 敵の出現頻度 ~1まで
+    public bool IsBossBattle = false; // ボス戦を判定するフラグ
+    public bool IsFromBattle = false; // バトル→迷路かどうかを制御
     [SerializeField] Vector2Int cpos = new Vector2Int(1, 1); //迷路でのいた位置を記憶
 
     public Vector2Int CPOS // cposはprivateにしたので、値の入出力用の関数を作成
@@ -27,7 +28,7 @@ public class ParameterDifiner : MonoBehaviour
         }
     }
 
-    public List<Sprite> WeaponSpriteList; //武器の候補リスト(予定) 敵も味方も
+    public List<Sprite> WeaponSpriteList; //武器の候補リスト 敵も味方も
 
     // キャラクター生成用の基底クラス
     public class Charactor
@@ -57,14 +58,23 @@ public class ParameterDifiner : MonoBehaviour
         public void SetMaxHP(int new_maxHP){ maxHP = new_maxHP; }
         public void SetATK(int new_attack) { ATK = new_attack; }
 
-        public int TakeDamage(int damage)
+        public int TakeDamage(int atk) // 引数は攻撃力
         {
-            damage -= Lv;
+            int damage = atk - Lv; // レベル=防御力とする
             if (damage < 0) damage = 0; // 0以下にならないように
             HP -= damage;
 
             UnityEngine.Debug.Log("name:" + Name + "Current HP:" + HP); 
             return damage;
+        }
+
+        public int HealDamage(int heal) // 引数は回復力
+        {
+            HP += heal;
+            if (HP > maxHP) HP = maxHP; // 最大HPは超えない
+
+            UnityEngine.Debug.Log("name:" + Name + "Current HP:" + HP);
+            return heal; // damageと揃えるため返り値にしておく
         }
 
         public virtual void YouAreDEAD() // 死亡時の関数 上書き前提
@@ -76,7 +86,24 @@ public class ParameterDifiner : MonoBehaviour
     // プレイヤーを生成し、管理するクラス
     public class Player : Charactor 
     {
-        public Player(string name, int lv, int maxHP, int atk) : base(name, lv, maxHP, atk) { }
+        protected int Exp;
+
+        public Player(string name, int lv, int exp, int maxHP, int atk) : base(name, lv, maxHP, atk)
+        {
+            this.Exp = exp;
+        }
+
+        public int GetExp() { return Exp; }
+        public void SetExp(int e) { Exp += e; }
+
+        public void LevelUP()
+        {
+            maxHP += Lv;
+            HP += Lv;
+            ATK += Lv;
+            Lv += 1;
+            Exp = 0;
+        }
 
         public override void YouAreDEAD() // プレイヤーが死亡時
         {
@@ -97,9 +124,11 @@ public class ParameterDifiner : MonoBehaviour
         public override void YouAreDEAD() //敵が死亡時
         {
             UnityEngine.Debug.Log("Enemy is down.");
-            if (parameterDifiner.IsBossBatlle)
+            parameterDifiner.IsFromBattle = true;
+
+            if (parameterDifiner.IsBossBattle)
             {
-                parameterDifiner.IsBossBatlle = false;
+                parameterDifiner.IsBossBattle = false;
                 SceneManager.LoadScene("Drop");
             }
             else
@@ -135,5 +164,21 @@ public class ParameterDifiner : MonoBehaviour
         public int GetWeaponATK() { return WeaponATK; }
 
         public SKILL GetWeaponSKILL() { return WeaponSKILL;}
+    }
+
+    // 以下、util系の関数
+
+    public void SetObjectColor(GameObject obj, Color newColor)
+    {
+        Renderer renderer = obj.GetComponent<Renderer>();
+
+        if (renderer != null)
+        {
+            renderer.material.color = newColor; // 引数で渡された色に変更
+        }
+        else
+        {
+            UnityEngine.Debug.LogWarning("Renderer not found on the object.");
+        }
     }
 }

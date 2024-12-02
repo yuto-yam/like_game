@@ -33,8 +33,7 @@ public class BattleManager : MonoBehaviour
     private SpriteRenderer spriterenderer;
     private GameObject EnemyWeaponPrefab; // 敵の武器 
 
-    private int turn; // ターン数
-    private int damage; // damageを保持する
+    private int turn, damage, heal; //各種数字
 
 
     // Start is called before the first frame update
@@ -65,9 +64,9 @@ public class BattleManager : MonoBehaviour
         generaltext = playerdataholder.GeneralText.GetComponent<UnityEngine.UI.Text>();
         generaltext.text = "Test success!";
         numtext_e = playerdataholder.NumText_E.GetComponent<UnityEngine.UI.Text>();
-        numtext_e.text = "0!";
+        numtext_e.text = "";
         numtext_p = playerdataholder.NumText_P.GetComponent<UnityEngine.UI.Text>();
-        numtext_p.text = "0!";
+        numtext_p.text = "";
         
 
         turn = 1; // ターン数初期化
@@ -104,6 +103,22 @@ public class BattleManager : MonoBehaviour
         else if (enemy.GetHP() <= 0)
         {
             generaltext.text = enemy.GetName() + "を倒した!";
+            yield return new WaitForSeconds(0.5f);
+
+            // 倒した敵のレベル分経験値を得る
+            playerdataholder.player.SetExp(enemy.GetLv());
+
+            // 現在レベルの2倍の経験値を得たらレベルアップ
+            if (playerdataholder.player.GetExp() >= playerdataholder.player.GetLv() * 2)
+            {
+                playerdataholder.player.LevelUP();
+                // テキスト表示
+                generaltext.text = $"{playerdataholder.player.GetName()}のレベルが{playerdataholder.player.GetLv()}に上がった！";
+                numtext_p.text = "LvUP!";
+                numtext_p.color = Color.white;
+                yield return new WaitForSeconds(1f);
+            }
+
             enemy.YouAreDEAD();
         }
     }
@@ -120,22 +135,46 @@ public class BattleManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.A)) // 通常攻撃
             {
                 // 攻撃処理
-                enemy.TakeDamage(playerdataholder.player.GetATK() + playerdataholder.player.GetLv());
-                damage = playerdataholder.player.TakeDamage(playerdataholder.player.GetATK() + playerdataholder.player.GetLv());
+                damage = enemy.TakeDamage(playerdataholder.player.GetATK()); // ダメージを算出
                 generaltext.text = $"{playerdataholder.player.GetName()} の攻撃！";
+                // ダメージを表示
                 numtext_e.text = (-damage).ToString();
                 numtext_e.color = Color.red;
+                // 武器のアニメーション
                 StartCoroutine(weaponcontroller_p.MoveWeaponCoroutine(new Vector3(2.5f, -2f, 0), true));
                 yield return new WaitForSeconds(0.5f);
+
+                // リセット系処理
                 numtext_e.text = "";
                 IsWaiting = true;
             }
+
             else if (Input.GetKeyDown(KeyCode.S)) // スキル攻撃
             {
                 // スキル処理
-                enemy.TakeDamage(playerdataholder.player.GetATK() + playerdataholder.player.GetLv() + enemy.GetLv());
-                generaltext.text = $"{playerdataholder.player.GetName()} のスキル攻撃！";
+                // MAGIC
+                if (playerdataholder.player_weapon.GetWeaponSKILL() == ParameterDifiner.SKILL.MAGIC)
+                {
+                    damage = enemy.TakeDamage(playerdataholder.player.GetATK() + enemy.GetLv()); // 魔法はレベル防御を貫通する
+                    generaltext.text = $"{playerdataholder.player.GetName()} のスキル攻撃！";
+                    // ダメージを表示
+                    numtext_e.text = (-damage).ToString();
+                    numtext_e.color = Color.red;
+                }
+                // HEAL
+                else if(playerdataholder.player_weapon.GetWeaponSKILL() == ParameterDifiner.SKILL.HEAL)
+                {
+                    heal = playerdataholder.player.HealDamage(playerdataholder.player_weapon.GetWeaponATK()); // 回復力=武器攻撃力
+                    generaltext.text = $"{playerdataholder.player.GetName()} は回復した！";
+                    // 回復量表示
+                    numtext_p.text = $" + {(heal).ToString()}";
+                    numtext_p.color = Color.green;
+                }
+
                 yield return new WaitForSeconds(0.5f);
+                // リセット系処理
+                numtext_e.text = "";
+                numtext_p.text = "";
                 IsWaiting = true;
             }
 
@@ -146,13 +185,15 @@ public class BattleManager : MonoBehaviour
     // 敵ターン処理
     private IEnumerator EnemyTurn()
     {
-        generaltext.text = "敵の攻撃！";
-        yield return new WaitForSeconds(1f);
-
+        // ダメージの算出
         damage = playerdataholder.player.TakeDamage(enemy.GetATK());
+        generaltext.text = "敵の攻撃！";
+        // ダメージ表示
         numtext_p.text = (-damage).ToString();
         numtext_p.color = Color.red;
+        // 攻撃アニメーション
         StartCoroutine(weaponcontroller_e.MoveWeaponCoroutine(new Vector3(-2.5f, -2f, 0), false));
+        // リセット系処理
         yield return new WaitForSeconds(0.5f);
         numtext_p.text = "";
     }

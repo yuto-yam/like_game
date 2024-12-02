@@ -119,17 +119,24 @@ public class MapGenerator : MonoBehaviour
                 GameObject _ground  = Instantiate(prefabs[(int)MAP_TYPE.GROUND], transform);
                 _ground.transform.position = ScreenPos(pos);
                 // 各位置に対応するPrefabを配置
-                GameObject _map = Instantiate(prefabs[(int)mapTable[x,y]], transform);
+                GameObject _map = Instantiate(prefabs[(int)mapTable[x, y]], transform);
                 _map.transform.position = ScreenPos(pos);
+
+                // ボス戦直前では階段を赤色に変更
+                if (parameterdifiner.MazeCount % 3 == 2 && mapTable[x, y] == MAP_TYPE.STAIR)
+                {
+                    parameterdifiner.SetObjectColor(_map, Color.red);
+                }
 
                 // プレイヤーの位置を取得して配置
                 // ループの最後に配置
                 if (x == mapTable.GetLength(0) -1 && y == mapTable.GetLength(1) -1)
                 {
                     // Battleシーンから帰ってきた場合
-                    if (parameterdifiner.MoveFromScene == "Battle")
+                    if (parameterdifiner.IsFromBattle)
                     {
                         Cpos = parameterdifiner.CPOS; // 元いた位置
+                        parameterdifiner.IsFromBattle = false;
                     }
                     // それ以外
                     else
