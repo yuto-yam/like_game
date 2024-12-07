@@ -136,9 +136,11 @@ public class PlayerDataHolder : MonoBehaviour
     private void BattleSceneInit()
     {
         UnityEngine.Debug.Log("バトル用の初期化処理を実行します。");
+
         //プレイヤーの武器を取得して位置を調整
         WeaponPrefab.transform.position = new Vector3(2.5f, -2f, 0);
-        WeaponPrefab.transform.Rotate(0, 180f, 0);
+        // WeaponPrefab.transform.Rotate(0, 180f, 0);
+
 
         // UIの表示非表示切り替え
         GeneralPanel.SetActive(true);
