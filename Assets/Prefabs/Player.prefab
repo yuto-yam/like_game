@@ -119,3 +119,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6582f40762ab4f545b3a8bf82ba4bd99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  directon: 0
+  currentPos: {x: 0, y: 0}
+  nextPos: {x: 0, y: 0}
+  mazemanager: {fileID: 0}
+  Encounter: 0

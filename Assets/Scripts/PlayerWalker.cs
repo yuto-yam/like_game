@@ -28,8 +28,10 @@ public class PlayerWalker : MonoBehaviour
         {-1, 0}  // LEFT
     };
     // 各種スクリプト取得
-    MapGenerator mapGenerator;
+    MapGenerator mapgenerator;
     ParameterDifiner parameterdifiner;
+    // public GameObject mazemanager;
+    // MazeSaver mazesaver; //JSON保存用スクリプト
 
     [SerializeField] float Encounter = 0; // 敵との遭遇危険度 1以上でエンカウント
 
@@ -39,8 +41,12 @@ public class PlayerWalker : MonoBehaviour
     {
         // 起動時にオブジェクトを取得
         animator = GetComponent<Animator>();
-        // MapManagerからMapGeneratorを取得
-        mapGenerator = transform.parent.GetComponent<MapGenerator>();
+        // MazeManagerからスクリプトを取得
+        // mazemanager = GameObject.FindWithTag("MazeManager");
+        mapgenerator = transform.parent.GetComponent<MapGenerator>();
+        // mazesaver = transform.parent.GetComponent<MazeSaver>();
+
+        // 始めは下向き
         directon = DIRECTION.DOWN;
 
         parameterdifiner = GameManager.Instance.GetComponent<ParameterDifiner>();
@@ -94,7 +100,7 @@ public class PlayerWalker : MonoBehaviour
        }
 
        // ゴールしたら、次の迷路へ
-       if (currentPos.x == mapGenerator.mapTable.GetLength(0) - 2 && currentPos.y == mapGenerator.mapTable.GetLength(1) - 2)
+       if (currentPos.x == mapgenerator.mapTable.GetLength(0) - 2 && currentPos.y == mapgenerator.mapTable.GetLength(1) - 2)
        {    
             parameterdifiner.MazeCount += 1;
             
@@ -112,6 +118,7 @@ public class PlayerWalker : MonoBehaviour
        else if (Encounter >= 1f) //ゴール以外で、敵との遭遇危険度が1を超えたら戦闘へ
        {
             parameterdifiner.CPOS = currentPos;
+            // mazesaver.SaveScene();
             SceneManager.LoadScene("Battle");
        }
        
@@ -122,14 +129,14 @@ public class PlayerWalker : MonoBehaviour
     void _move() // 移動用関数
     {
         nextPos = currentPos + new Vector2Int(move[(int)directon, 0], move[(int)directon, 1]);
-        if(mapGenerator.GetNextMapType(nextPos) != MapGenerator.MAP_TYPE.WALL) //MAP_TYPEが壁でなければ移動
+        if(mapgenerator.GetNextMapType(nextPos) != MapGenerator.MAP_TYPE.WALL) //MAP_TYPEが壁でなければ移動
         {
-            transform.localPosition = mapGenerator.ScreenPos(nextPos);
+            transform.localPosition = mapgenerator.ScreenPos(nextPos);
             currentPos = nextPos;
 
             // 敵との遭遇率を計上
             float tmp_enc = ((float)currentPos.x + (float)currentPos.y) /
-                             ((float)mapGenerator.mapTable.GetLength(0) * (float)mapGenerator.mapTable.GetLength(1)); // 現在座標の和をマス目の数で正規化、端の方が敵が出やすい
+                             ((float)mapgenerator.mapTable.GetLength(0) * (float)mapgenerator.mapTable.GetLength(1)); // 現在座標の和をマス目の数で正規化、端の方が敵が出やすい
             Encounter += tmp_enc * UnityEngine.Random.Range(parameterdifiner.Encount_Rate, 1.0f); // 敵に出会いすぎないように補正、9*9で1回あるかどうかくらい
 
             UnityEngine.Debug.Log(Encounter);
