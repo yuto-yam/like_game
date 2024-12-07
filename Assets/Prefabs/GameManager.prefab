@@ -755,6 +755,7 @@ GameObject:
   - component: {fileID: 6078237383604475998}
   - component: {fileID: 2176835778393575113}
   - component: {fileID: 7798142080202443094}
+  - component: {fileID: 6295842719377933624}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -805,8 +806,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BattleCount: 0
   MazeCount: 0
-  IsBossBatlle: 0
-  MoveFromScene: None
+  Encount_Rate: 0.5
+  IsBossBattle: 0
+  IsFromBattle: 0
+  MapNumber: 0
   cpos: {x: 1, y: 1}
   WeaponSpriteList: []
 --- !u!114 &7798142080202443094
@@ -822,8 +825,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   TmpWeaponObj: {fileID: 8706452465287908328, guid: f3ad5c86cb9e3f544b3b28ad0a938ed0, type: 3}
-  WeaponColor: {fileID: 0}
   WeaponPrefab: {fileID: 8706452465287908328, guid: f3ad5c86cb9e3f544b3b28ad0a938ed0, type: 3}
+  WeaponColor: {fileID: 0}
   NewWeaponPrefab: {fileID: 0}
   StatusPanel: {fileID: 8274287915194373020}
   StatusText: {fileID: 4257183656281890501}
@@ -835,6 +838,19 @@ MonoBehaviour:
   DropPanel: {fileID: 5010448859069356874}
   OldDropText: {fileID: 8226043496267616250}
   NewDropText: {fileID: 2689808115743848795}
+  TargetCamera: {fileID: 2185695921643288892}
+--- !u!114 &6295842719377933624
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6193216367327562616}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc2093f0e4e56154eb4a65888458ac4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6324250421181333171
 GameObject:
   m_ObjectHideFlags: 0
