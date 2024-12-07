@@ -14,6 +14,7 @@ public class ParameterDifiner : MonoBehaviour
     public float Encount_Rate = 0.5f; // 敵の出現頻度 ~1まで
     public bool IsBossBattle = false; // ボス戦を判定するフラグ
     public bool IsFromBattle = false; // バトル→迷路かどうかを制御
+    public int MapNumber  = 0; // 迷路の番号を記憶
     [SerializeField] Vector2Int cpos = new Vector2Int(1, 1); //迷路でのいた位置を記憶
 
     public Vector2Int CPOS // cposはprivateにしたので、値の入出力用の関数を作成
@@ -166,19 +167,4 @@ public class ParameterDifiner : MonoBehaviour
         public SKILL GetWeaponSKILL() { return WeaponSKILL;}
     }
 
-    // 以下、util系の関数
-
-    public void SetObjectColor(GameObject obj, Color newColor)
-    {
-        Renderer renderer = obj.GetComponent<Renderer>();
-
-        if (renderer != null)
-        {
-            renderer.material.color = newColor; // 引数で渡された色に変更
-        }
-        else
-        {
-            UnityEngine.Debug.LogWarning("Renderer not found on the object.");
-        }
-    }
 }
