@@ -811,7 +811,6 @@ MonoBehaviour:
   IsFromBattle: 0
   MapNumber: 0
   cpos: {x: 1, y: 1}
-  WeaponSpriteList: []
 --- !u!114 &7798142080202443094
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -824,7 +823,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c002ab4f52e33041b483696061a684f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TmpWeaponObj: {fileID: 8706452465287908328, guid: f3ad5c86cb9e3f544b3b28ad0a938ed0, type: 3}
+  TmpWeaponObj: {fileID: 2884597339082736373, guid: f3ad5c86cb9e3f544b3b28ad0a938ed0, type: 3}
   WeaponPrefab: {fileID: 8706452465287908328, guid: f3ad5c86cb9e3f544b3b28ad0a938ed0, type: 3}
   WeaponColor: {fileID: 0}
   NewWeaponPrefab: {fileID: 0}
@@ -838,7 +837,11 @@ MonoBehaviour:
   DropPanel: {fileID: 5010448859069356874}
   OldDropText: {fileID: 8226043496267616250}
   NewDropText: {fileID: 2689808115743848795}
-  TargetCamera: {fileID: 2185695921643288892}
+  WeaponSpriteList:
+  - {fileID: 21300000, guid: a71b37afdd8e64346adc1547646f5bac, type: 3}
+  - {fileID: 21300000, guid: d16e4c2b1db182941880bacee9f9b440, type: 3}
+  - {fileID: 21300000, guid: bdba166fe6f437847b74f58efe3b6112, type: 3}
+  - {fileID: 21300000, guid: 98a0977c9808a5948a8d38ccabb0da42, type: 3}
 --- !u!114 &6295842719377933624
 MonoBehaviour:
   m_ObjectHideFlags: 0

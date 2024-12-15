@@ -19,12 +19,10 @@ public class PlayerDataHolder : MonoBehaviour
     // 画面上の武器
     public GameObject TmpWeaponObj; // プレハブ生成元のオブジェクト
     public GameObject WeaponPrefab; // 画面上での武器
-    public Renderer WeaponColor;    // 武器の色を指定 
 
     // ドロップ用
     public ParameterDifiner.Weapon new_weapon;
     public GameObject NewWeaponPrefab;
-    private Renderer NewWeaponColor;
 
     // UI用パネルとテキストの準備
     [SerializeField] GameObject StatusPanel;
@@ -46,14 +44,19 @@ public class PlayerDataHolder : MonoBehaviour
     [SerializeField] GameObject NewDropText;
     private UnityEngine.UI.Text newdroptext;
 
+    public List<Sprite> WeaponSpriteList; // 武器の候補リスト
+
+    UtilFunctions utilFunctions;
 
     private void Awake()
     {
+        utilFunctions = GetComponent<UtilFunctions>();
+
         //プレイヤー初期宣言(名前、レベル、HP、攻撃力)
         player = new ParameterDifiner.Player("yu-sya", 1, 0, 50, 10);
 
         //武器初期宣言(名前、攻撃力、スキル)
-        player_weapon = new ParameterDifiner.Weapon("tmp_sword", 10, ParameterDifiner.SKILL.MAGIC);
+        player_weapon = new ParameterDifiner.Weapon("tmp_sword", 10, ParameterDifiner.SKILL.MAGIC, 0, 0);
         WeaponPrefab = Instantiate(TmpWeaponObj, new Vector3(0, 0, 0), Quaternion.identity);
         WeaponPrefab.transform.SetParent(StatusPanel.transform, false);
         WeaponPrefab.transform.localScale = new Vector3(250f, 250f, 250f);
@@ -77,13 +80,13 @@ public class PlayerDataHolder : MonoBehaviour
             "Name:{0,-5}  Lv:{1,-3}  Exp:{2,-3}\n" +
             "HP:{3,3}/{4,-3}  ATK:{5,-3}\n" +
             "Weapon:{6}",
-            player.GetName(),
-            player.GetLv(),
-            player.GetExp(),
-            player.GetHP(),
-            player.GetMaxHP(),
-            player.GetATK(),
-            player_weapon.GetWeaponName()
+            player.Name,
+            player.Lv,
+            player.Exp,
+            player.HP,
+            player.MaxHP,
+            player.ATK + player_weapon.WeaponATK,
+            player_weapon.WeaponName
         );
 
     }
@@ -159,25 +162,50 @@ public class PlayerDataHolder : MonoBehaviour
         DropPanel.SetActive(true);
 
         // 新しい武器を生成
-        new_weapon = new ParameterDifiner.Weapon("new_sword", 15, ParameterDifiner.SKILL.HEAL);
+        int[] new_wstatus = utilFunctions.AutoWeaponStatusGenerater(player.Lv); 
+        new_weapon = new ParameterDifiner.Weapon(utilFunctions.GetWeaponName(new_wstatus), new_wstatus[0], (ParameterDifiner.SKILL)new_wstatus[1], new_wstatus[2], new_wstatus[3]);
+
         NewWeaponPrefab = Instantiate(TmpWeaponObj, new Vector3(0, 0, 0), Quaternion.identity);
+        ApplyWeaponAttributes(NewWeaponPrefab, new_weapon);
 
         NewWeaponPrefab.transform.SetParent(StatusPanel.transform, false);
-        NewWeaponPrefab.transform.localScale = new Vector3(250f, 250f, 250f);
+        NewWeaponPrefab.transform.localScale = new Vector3(-250f, 250f, 250f);
         NewWeaponPrefab.transform.position = new Vector3(4f, 1f, 0);
-        WeaponColor = NewWeaponPrefab.GetComponent<Renderer>();
-        WeaponColor.material.color = Color.red;
 
         newdroptext = NewDropText.GetComponent<UnityEngine.UI.Text>();
-        newdroptext.text = "名前：" + new_weapon.GetWeaponName() + "\n" + "ATK:" + new_weapon.GetWeaponATK() + "\n" + "SKILL:" + new_weapon.GetWeaponSKILL();
+        newdroptext.text = "名前：" + new_weapon.WeaponName + "\n" + "ATK:" + new_weapon.WeaponATK + "\n" + "SKILL:" + new_weapon.WeaponSkill;
 
         //プレイヤーの武器を取得して位置を調整
         WeaponPrefab.transform.position = new Vector3(-4f, 1f, 0);
 
         olddroptext = OldDropText.GetComponent<UnityEngine.UI.Text>();
-        olddroptext.text = "名前：" + player_weapon.GetWeaponName() + "\n" + "ATK:" + player_weapon.GetWeaponATK() + "\n" + "SKILL:" + player_weapon.GetWeaponSKILL();
+        olddroptext.text = "名前：" + player_weapon.WeaponName + "\n" + "ATK:" + player_weapon.WeaponATK + "\n" + "SKILL:" + player_weapon.WeaponSkill;
 
         generaltext = GeneralText.GetComponent<UnityEngine.UI.Text>();
         generaltext.text = "新しい武器を入手しました！ 武器を変えますか？" + "         " + "Y/N";
+    }
+
+    // プレハブにスプライトと色を適用するメソッド
+    void ApplyWeaponAttributes(GameObject weaponInstance, ParameterDifiner.Weapon weapon)
+    {
+        // スプライトを設定するためのSpriteRenderer
+        SpriteRenderer spriteRenderer = weaponInstance.GetComponent<SpriteRenderer>();
+
+        // スプライトの設定（武器のスプライトインデックスに基づく）
+        if (spriteRenderer != null)
+        {
+            Sprite sprite = WeaponSpriteList[weapon.SpriteIndex];
+            if (sprite != null)
+            {
+                spriteRenderer.sprite = sprite;
+            }
+        }
+
+        // 色を設定するためのRenderer
+        Renderer renderer = weaponInstance.GetComponent<Renderer>();
+        if (renderer != null)
+        {
+            renderer.material.color = ParameterDifiner.ColorPalette.IndexToColor(weapon.ColorIndex);
+        }
     }
 }

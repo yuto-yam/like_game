@@ -105,7 +105,7 @@ public class PlayerWalker : MonoBehaviour
         // ゴールしたら、次の迷路へ
         if (currentPos.x == mapgenerator.mapTable.GetLength(0) - 2 && currentPos.y == mapgenerator.mapTable.GetLength(1) - 2)
         {
-            parameterdifiner.MazeCount += 1;
+            parameterdifiner.MazeCount = (parameterdifiner.MazeCount + 1);
 
             // 迷路3つごとにボス戦へ
             if (parameterdifiner.MazeCount % 3 == 0)
