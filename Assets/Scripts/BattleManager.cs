@@ -45,7 +45,7 @@ public class BattleManager : MonoBehaviour
 
         // 敵を生成
         enemy = new ParameterDifiner.Enemy("enemy", 2, 20, 5, parameterdifiner);
-        UnityEngine.Debug.Log("player's HP: " + playerdataholder.player.GetHP() + ", enemy's HP: " + enemy.GetHP());
+        UnityEngine.Debug.Log("player's HP: " + playerdataholder.player.HP + ", enemy's HP: " + enemy.HP);
 
         int randomIndex = UnityEngine.Random.Range(0, EnemySpriteList.Count);
         enemysprite = EnemySpriteList[randomIndex];
@@ -76,44 +76,44 @@ public class BattleManager : MonoBehaviour
     // ターン管理用コルーチン
     private IEnumerator BattleTurnCoroutine()
     {
-        while (playerdataholder.player.GetHP() > 0 && enemy.GetHP() > 0)
+        while (playerdataholder.player.HP > 0 && enemy.HP > 0)
         {
             // プレイヤーターンの開始
             yield return StartCoroutine(PlayerTurn());
 
             // 敵が倒れた場合は終了
-            if (enemy.GetHP() <= 0) break;
+            if (enemy.HP <= 0) break;
 
             // 敵ターンの処理
             yield return StartCoroutine(EnemyTurn());
 
             // プレイヤーが倒れた場合は終了
-            if (playerdataholder.player.GetHP() <= 0) break;
+            if (playerdataholder.player.HP <= 0) break;
 
             // ターンを進める
             turn++;
         }
 
         // 結果の処理
-        if (playerdataholder.player.GetHP() <= 0)
+        if (playerdataholder.player.HP <= 0)
         {
             generaltext.text = "負けてしまった！";
             playerdataholder.player.YouAreDEAD();
         }
-        else if (enemy.GetHP() <= 0)
+        else if (enemy.HP <= 0)
         {
-            generaltext.text = enemy.GetName() + "を倒した!";
+            generaltext.text = enemy.Name + "を倒した!";
             yield return new WaitForSeconds(0.5f);
 
             // 倒した敵のレベル分経験値を得る
-            playerdataholder.player.SetExp(enemy.GetLv());
+            playerdataholder.player.AddExp(enemy.Lv);
 
             // 現在レベルの2倍の経験値を得たらレベルアップ
-            if (playerdataholder.player.GetExp() >= playerdataholder.player.GetLv() * 2)
+            if (playerdataholder.player.Exp >= playerdataholder.player.Lv * 2)
             {
                 playerdataholder.player.LevelUP();
                 // テキスト表示
-                generaltext.text = $"{playerdataholder.player.GetName()}のレベルが{playerdataholder.player.GetLv()}に上がった！";
+                generaltext.text = $"{playerdataholder.player.Name}のレベルが{playerdataholder.player.Lv}に上がった！";
                 numtext_p.text = "LvUP!";
                 numtext_p.color = Color.white;
                 yield return new WaitForSeconds(1f);
@@ -126,7 +126,7 @@ public class BattleManager : MonoBehaviour
     // プレイヤーターン処理
     private IEnumerator PlayerTurn()
     {
-        generaltext.text = $"ターン {turn}: {playerdataholder.player.GetName()} はどうする？    A:攻撃/S:スキル";
+        generaltext.text = $"ターン {turn}: {playerdataholder.player.Name} はどうする？    A:攻撃/S:スキル";
         yield return new WaitForSeconds(0.2f); // 表示時間調整
 
         bool IsWaiting = false; // 戦闘用フラグ
@@ -135,8 +135,8 @@ public class BattleManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.A)) // 通常攻撃
             {
                 // 攻撃処理
-                damage = enemy.TakeDamage(playerdataholder.player.GetATK()); // ダメージを算出
-                generaltext.text = $"{playerdataholder.player.GetName()} の攻撃！";
+                damage = enemy.TakeDamage(playerdataholder.player.ATK); // ダメージを算出
+                generaltext.text = $"{playerdataholder.player.Name} の攻撃！";
                 // ダメージを表示
                 numtext_e.text = (-damage).ToString();
                 numtext_e.color = Color.red;
@@ -153,19 +153,19 @@ public class BattleManager : MonoBehaviour
             {
                 // スキル処理
                 // MAGIC
-                if (playerdataholder.player_weapon.GetWeaponSKILL() == ParameterDifiner.SKILL.MAGIC)
+                if (playerdataholder.player_weapon.WeaponSkill == ParameterDifiner.SKILL.MAGIC)
                 {
-                    damage = enemy.TakeDamage(playerdataholder.player.GetATK() + enemy.GetLv()); // 魔法はレベル防御を貫通する
-                    generaltext.text = $"{playerdataholder.player.GetName()} のスキル攻撃！";
+                    damage = enemy.TakeDamage(playerdataholder.player.ATK + enemy.Lv); // 魔法はレベル防御を貫通する
+                    generaltext.text = $"{playerdataholder.player.Name} のスキル攻撃！";
                     // ダメージを表示
                     numtext_e.text = (-damage).ToString();
                     numtext_e.color = Color.red;
                 }
                 // HEAL
-                else if(playerdataholder.player_weapon.GetWeaponSKILL() == ParameterDifiner.SKILL.HEAL)
+                else if(playerdataholder.player_weapon.WeaponSkill == ParameterDifiner.SKILL.HEAL)
                 {
-                    heal = playerdataholder.player.HealDamage(playerdataholder.player_weapon.GetWeaponATK()); // 回復力=武器攻撃力
-                    generaltext.text = $"{playerdataholder.player.GetName()} は回復した！";
+                    heal = playerdataholder.player.HealDamage(playerdataholder.player_weapon.WeaponATK); // 回復力=武器攻撃力
+                    generaltext.text = $"{playerdataholder.player.Name} は回復した！";
                     // 回復量表示
                     numtext_p.text = $" + {(heal).ToString()}";
                     numtext_p.color = Color.green;
@@ -186,7 +186,7 @@ public class BattleManager : MonoBehaviour
     private IEnumerator EnemyTurn()
     {
         // ダメージの算出
-        damage = playerdataholder.player.TakeDamage(enemy.GetATK());
+        damage = playerdataholder.player.TakeDamage(enemy.ATK);
         generaltext.text = "敵の攻撃！";
         // ダメージ表示
         numtext_p.text = (-damage).ToString();
