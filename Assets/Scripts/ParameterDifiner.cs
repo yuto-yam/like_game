@@ -169,14 +169,14 @@ public class ParameterDifiner : MonoBehaviour
         {
             switch (index)
             {
-                case 0: return "無垢の";
-                case 1: return "闇の";
+                case 0: return "闇の";
+                case 1: return "無垢の";
                 case 2: return "灰の";
                 case 3: return "赫き";
                 case 4: return "草の";
                 case 5: return "蒼の";
-                case 6: return "空の";
-                case 7: return "花の";
+                case 6: return "花の";
+                case 7: return "空の";
                 case 8: return "桃の";
                 default: return "無地の";
             }

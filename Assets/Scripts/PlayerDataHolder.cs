@@ -55,11 +55,11 @@ public class PlayerDataHolder : MonoBehaviour
         //プレイヤー初期宣言(名前、レベル、HP、攻撃力)
         player = new ParameterDifiner.Player("yu-sya", 1, 0, 50, 10);
 
-        //武器初期宣言(名前、攻撃力、スキル)
+        //武器初期宣言(名前、攻撃力、スキル、画像、色)
         player_weapon = new ParameterDifiner.Weapon("tmp_sword", 10, ParameterDifiner.SKILL.MAGIC, 0, 0);
         WeaponPrefab = Instantiate(TmpWeaponObj, new Vector3(0, 0, 0), Quaternion.identity);
         WeaponPrefab.transform.SetParent(StatusPanel.transform, false);
-        WeaponPrefab.transform.localScale = new Vector3(250f, 250f, 250f);
+        WeaponPrefab.transform.localScale = new Vector3(-250f, 250f, 250f);
 
         // ステータステキストを取得
         statustext = StatusText.GetComponent<UnityEngine.UI.Text>();
