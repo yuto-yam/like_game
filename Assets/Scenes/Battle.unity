@@ -550,9 +550,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fac17836dde5ee4192a1ea672929aee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  e_status: 
+  EnemyObject: {fileID: 678096030}
   EnemySpriteList:
   - {fileID: 21300000, guid: f3642e72155acd94f9578945226ad1e5, type: 3}
-  EnemyObject: {fileID: 678096030}
+  - {fileID: 21300000, guid: 3becc68267baa7046b32a907dca87424, type: 3}
+  - {fileID: 21300000, guid: 9eb7ce40be0fa3a4c91c3e6cc56bc0ee, type: 3}
 --- !u!4 &1630712018
 Transform:
   m_ObjectHideFlags: 0
