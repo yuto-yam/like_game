@@ -153,7 +153,7 @@ public class BattleManager : MonoBehaviour
                 numtext_e.text = (-damage).ToString();
                 numtext_e.color = Color.red;
                 // 武器のアニメーション
-                StartCoroutine(weaponcontroller_p.MoveWeaponCoroutine(new Vector3(2.5f, -2f, 0), true));
+                StartCoroutine(weaponcontroller_p.MiceAnimationCoroutine(new Vector3(2.5f, -2f, 0), true));
                 yield return new WaitForSeconds(0.5f);
 
                 // リセット系処理
@@ -172,6 +172,9 @@ public class BattleManager : MonoBehaviour
                     // ダメージを表示
                     numtext_e.text = (-damage).ToString();
                     numtext_e.color = Color.red;
+                    // スキルのアニメーション
+                    StartCoroutine(weaponcontroller_p.MagicAnimationCoroutine(ParameterDifiner.ColorPalette.IndexToColor(playerdataholder.player_weapon.ColorIndex), true));
+                    yield return new WaitForSeconds(0.5f);
                 }
                 // HEAL
                 else if(playerdataholder.player_weapon.WeaponSkill == ParameterDifiner.SKILL.HEAL)
@@ -181,6 +184,9 @@ public class BattleManager : MonoBehaviour
                     // 回復量表示
                     numtext_p.text = $" + {(heal).ToString()}";
                     numtext_p.color = Color.green;
+                    // スキルのアニメーション
+                    StartCoroutine(weaponcontroller_p.HealAnimationCoroutine(true));
+                    yield return new WaitForSeconds(0.5f);
                 }
 
                 yield return new WaitForSeconds(0.5f);
@@ -204,7 +210,7 @@ public class BattleManager : MonoBehaviour
         numtext_p.text = (-damage).ToString();
         numtext_p.color = Color.red;
         // 攻撃アニメーション
-        StartCoroutine(weaponcontroller_e.MoveWeaponCoroutine(new Vector3(-2.5f, -2f, 0), false));
+        StartCoroutine(weaponcontroller_e.MiceAnimationCoroutine(new Vector3(-2.5f, -2f, 0), false));
         // リセット系処理
         yield return new WaitForSeconds(0.5f);
         numtext_p.text = "";

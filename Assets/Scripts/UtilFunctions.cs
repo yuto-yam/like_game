@@ -39,6 +39,7 @@ public class UtilFunctions : MonoBehaviour
     // 武器の名前をステータスから決定する関数
     public string GetWeaponName(int[] wstatus)
     {
+        // デフォルトはエラー対策で、出たらおかしい
         string skillName = wstatus[1] switch
         {
             (int)ParameterDifiner.SKILL.MAGIC => "迸る",
