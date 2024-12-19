@@ -26,12 +26,13 @@ public class BattleManager : MonoBehaviour
 
     private Coroutine cuurentCoroutine; // 表示テキスト管理用コルーチン
 
-    ParameterDifiner.Enemy enemy; // 敵
-    [SerializeField] List<Sprite> EnemySpriteList; // 敵の画像リスト
-    [SerializeField] GameObject EnemyObject;
-    private Sprite enemysprite;
+    ParameterDifiner.Enemy enemy; // 敵のクラス
+    [SerializeField] int[] e_status; // 敵のステータスをランダムで作る
+    [SerializeField] GameObject EnemyObject; // 敵のオブジェクト
+    private Sprite enemysprite; // 敵の画像
     private SpriteRenderer spriterenderer;
-    private GameObject EnemyWeaponPrefab; // 敵の武器 
+    private GameObject EnemyWeaponPrefab; // 敵の武器
+    private Sprite EnemyWeaponSprite; // 武器の画像
 
     private int turn, damage, heal; //各種数字
 
@@ -44,11 +45,12 @@ public class BattleManager : MonoBehaviour
         parameterdifiner = GameManager.Instance.GetComponent<ParameterDifiner>();
 
         // 敵を生成
-        enemy = new ParameterDifiner.Enemy("enemy", 2, 20, 5, parameterdifiner);
+        // enemy = new ParameterDifiner.Enemy("enemy", 2, 20, 5, parameterdifiner);
+        e_status = AutoEnemyGenerater(playerdataholder.player.Lv, parameterdifiner.IsBossBattle);
+        enemy = new ParameterDifiner.Enemy(enemies[e_status[0]].Name, e_status[1], e_status[2], e_status[3], parameterdifiner);
         UnityEngine.Debug.Log("player's HP: " + playerdataholder.player.HP + ", enemy's HP: " + enemy.HP);
 
-        int randomIndex = UnityEngine.Random.Range(0, EnemySpriteList.Count);
-        enemysprite = EnemySpriteList[randomIndex];
+        enemysprite = EnemySpriteList[e_status[0]];
         spriterenderer = EnemyObject.GetComponent<SpriteRenderer>();
         spriterenderer.sprite = enemysprite;
         EnemyObject.transform.position = new Vector3 (-5, 0, 0);
@@ -58,6 +60,16 @@ public class BattleManager : MonoBehaviour
         weaponcontroller_p = PlayerWeponObj.GetComponent<WeaponController>();
 
         EnemyWeaponPrefab = Instantiate(playerdataholder.TmpWeaponObj, new Vector3(-2.5f, -2f, 0), Quaternion.identity);
+        if (e_status[4] >= 0)
+        {
+            EnemyWeaponSprite = playerdataholder.WeaponSpriteList[e_status[4]];
+            spriterenderer = EnemyWeaponPrefab.GetComponent<SpriteRenderer>();
+            spriterenderer.sprite = EnemyWeaponSprite;
+        }
+        else
+        {
+            EnemyWeaponPrefab.SetActive(false);
+        }
         weaponcontroller_e = EnemyWeaponPrefab.GetComponent<WeaponController>();
 
         // テキスト表示の準備
@@ -196,5 +208,46 @@ public class BattleManager : MonoBehaviour
         // リセット系処理
         yield return new WaitForSeconds(0.5f);
         numtext_p.text = "";
+    }
+
+    // 敵の自動的生成
+    // ベースとなるステータスの設定
+    public struct EnemyStatus
+    {
+        public string Name;
+        public int BaseHp;
+        public int BaseAtk;
+        public int WeaponIndex; // 武器のインデックス番号
+    }
+
+    [SerializeField] List<Sprite> EnemySpriteList; // 敵の画像リスト
+
+    EnemyStatus[] enemies = new EnemyStatus[]
+    {
+        // 宣言順は、画像リストと同じにすること(EnemySpriteListの0はゴブリンということ)
+        new EnemyStatus { Name = "ゴブリン", BaseHp = 10, BaseAtk = 1, WeaponIndex = 1 }, // 武器は斧
+        new EnemyStatus { Name = "オーガ", BaseHp = 20, BaseAtk = 5, WeaponIndex = 0 },   // 武器は剣
+        new EnemyStatus { Name = "ウィッチ", BaseHp = 15, BaseAtk = 3, WeaponIndex = -1 },// 武器は無し                
+    };
+
+    private int[] AutoEnemyGenerater(int pLv, bool Boss)
+    {
+        int[] enemy_status = new int[5]; // インデックス番号、レベル、HP、攻撃力、武器インデックス
+
+        // どの敵かをランダムで決定
+        enemy_status[0] = UnityEngine.Random.Range(0, enemies.Length);
+        // 敵のレベルをプレイヤーレベルに応じて決定
+        enemy_status[1] = UnityEngine.Random.Range(Mathf.Max(1, pLv - 2), pLv + 2);
+        if (Boss)
+        {
+            enemy_status[1] += 2; // Bossなら、2レベル上げる
+        }
+        // レベルに応じてステータス調整
+        enemy_status[2] = enemies[enemy_status[0]].BaseHp  + enemy_status[1] * 2;
+        enemy_status[3] = enemies[enemy_status[0]].BaseAtk + enemy_status[1];
+        // 武器インデックスを収納
+        enemy_status[4] = enemies[enemy_status[0]].WeaponIndex;
+
+        return enemy_status;
     }
 }
