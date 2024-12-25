@@ -15,6 +15,8 @@ public class BattleManager : MonoBehaviour
     // プレイヤーのデータを参照する準備
     PlayerDataHolder playerdataholder;
     ParameterDifiner parameterdifiner;
+    UtilFunctions utilfunctions;
+
     // 武器を参照する準備
     GameObject PlayerWeponObj;
     WeaponController weaponcontroller_p, weaponcontroller_e;
@@ -43,10 +45,12 @@ public class BattleManager : MonoBehaviour
         // プレイヤーデータの取得
         playerdataholder = GameManager.Instance.GetComponent<PlayerDataHolder>();
         parameterdifiner = GameManager.Instance.GetComponent<ParameterDifiner>();
+        utilfunctions = GameManager.Instance.GetComponent<UtilFunctions>();
+
 
         // 敵を生成
-        // enemy = new ParameterDifiner.Enemy("enemy", 2, 20, 5, parameterdifiner);
         e_status = AutoEnemyGenerater(playerdataholder.player.Lv, parameterdifiner.IsBossBattle);
+        // 名前、レベル、HP、攻撃力
         enemy = new ParameterDifiner.Enemy(enemies[e_status[0]].Name, e_status[1], e_status[2], e_status[3], parameterdifiner);
         UnityEngine.Debug.Log("player's HP: " + playerdataholder.player.HP + ", enemy's HP: " + enemy.HP);
 
@@ -147,13 +151,13 @@ public class BattleManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.A)) // 通常攻撃
             {
                 // 攻撃処理
-                damage = enemy.TakeDamage(playerdataholder.player.ATK); // ダメージを算出
+                damage = enemy.TakeDamage(playerdataholder.player.ATK + playerdataholder.player_weapon.WeaponATK); // ダメージを算出
                 generaltext.text = $"{playerdataholder.player.Name} の攻撃！";
                 // ダメージを表示
                 numtext_e.text = (-damage).ToString();
                 numtext_e.color = Color.red;
                 // 武器のアニメーション
-                StartCoroutine(weaponcontroller_p.MiceAnimationCoroutine(new Vector3(2.5f, -2f, 0), true));
+                WeaponAttackAnimation(true, playerdataholder.player_weapon.SpriteIndex);
                 yield return new WaitForSeconds(0.5f);
 
                 // リセット系処理
@@ -164,36 +168,44 @@ public class BattleManager : MonoBehaviour
             else if (Input.GetKeyDown(KeyCode.S)) // スキル攻撃
             {
                 // スキル処理
-                // MAGIC
-                if (playerdataholder.player_weapon.WeaponSkill == ParameterDifiner.SKILL.MAGIC)
+                int useMP = playerdataholder.player_weapon.WeaponATK / 2; // 消費MP = 武器攻撃力の半分
+                if (useMP <= playerdataholder.player.MP)
                 {
-                    damage = enemy.TakeDamage(playerdataholder.player.ATK + enemy.Lv); // 魔法はレベル防御を貫通する
-                    generaltext.text = $"{playerdataholder.player.Name} のスキル攻撃！";
-                    // ダメージを表示
-                    numtext_e.text = (-damage).ToString();
-                    numtext_e.color = Color.red;
-                    // スキルのアニメーション
-                    StartCoroutine(weaponcontroller_p.MagicAnimationCoroutine(ParameterDifiner.ColorPalette.IndexToColor(playerdataholder.player_weapon.ColorIndex), true));
-                    yield return new WaitForSeconds(0.5f);
-                }
-                // HEAL
-                else if(playerdataholder.player_weapon.WeaponSkill == ParameterDifiner.SKILL.HEAL)
-                {
-                    heal = playerdataholder.player.HealDamage(playerdataholder.player_weapon.WeaponATK); // 回復力=武器攻撃力
-                    generaltext.text = $"{playerdataholder.player.Name} は回復した！";
-                    // 回復量表示
-                    numtext_p.text = $" + {(heal).ToString()}";
-                    numtext_p.color = Color.green;
-                    // スキルのアニメーション
-                    StartCoroutine(weaponcontroller_p.HealAnimationCoroutine(true));
-                    yield return new WaitForSeconds(0.5f);
-                }
+                    // MPを消費
+                    playerdataholder.player.MPChange(useMP);
 
-                yield return new WaitForSeconds(0.5f);
-                // リセット系処理
-                numtext_e.text = "";
-                numtext_p.text = "";
-                IsWaiting = true;
+                    // MAGIC
+                    if (playerdataholder.player_weapon.WeaponSkill == ParameterDifiner.SKILL.MAGIC)
+                    {
+                        damage = enemy.TakeDamage(playerdataholder.player.ATK + playerdataholder.player_weapon.WeaponATK + enemy.Lv); // 魔法はレベル防御を貫通する
+                        generaltext.text = $"{playerdataholder.player.Name} のスキル攻撃！";
+                        // ダメージを表示
+                        numtext_e.text = (-damage).ToString();
+                        numtext_e.color = Color.red;
+                        // スキルのアニメーション
+                        StartCoroutine(weaponcontroller_p.MagicAnimationCoroutine(ParameterDifiner.ColorPalette.IndexToColor(playerdataholder.player_weapon.ColorIndex), true));
+                        yield return new WaitForSeconds(0.5f);
+                    }
+                    // HEAL
+                    else if (playerdataholder.player_weapon.WeaponSkill == ParameterDifiner.SKILL.HEAL)
+                    {
+                        heal = playerdataholder.player.HealDamage(playerdataholder.player_weapon.WeaponATK); // 回復力 = 武器攻撃力
+                        generaltext.text = $"{playerdataholder.player.Name} は回復した！";
+                        // 回復量表示
+                        numtext_p.text = $" + {(heal).ToString()}";
+                        numtext_p.color = Color.green;
+                        // スキルのアニメーション
+                        StartCoroutine(weaponcontroller_p.HealAnimationCoroutine(true));
+                        yield return new WaitForSeconds(0.5f);
+                    }
+
+                    yield return new WaitForSeconds(0.5f);
+                    // リセット系処理
+                    numtext_e.text = "";
+                    numtext_p.text = "";
+                    IsWaiting = true;
+                }
+                else { generaltext.text = "しかしMPが足りない！"; }
             }
 
             yield return null; // 入力待機
@@ -203,18 +215,76 @@ public class BattleManager : MonoBehaviour
     // 敵ターン処理
     private IEnumerator EnemyTurn()
     {
-        // ダメージの算出
-        damage = playerdataholder.player.TakeDamage(enemy.ATK);
-        generaltext.text = "敵の攻撃！";
-        // ダメージ表示
-        numtext_p.text = (-damage).ToString();
-        numtext_p.color = Color.red;
-        // 攻撃アニメーション
-        StartCoroutine(weaponcontroller_e.MiceAnimationCoroutine(new Vector3(-2.5f, -2f, 0), false));
+        if (enemy.Name == "ゴブリン") // ゴブリンのルーチン
+        {
+            // 通常攻撃のみ
+            damage = playerdataholder.player.TakeDamage(enemy.ATK);
+            generaltext.text = $"{enemy.Name} の攻撃！";
+
+            // ダメージ表示
+            numtext_p.text = (-damage).ToString();
+            numtext_p.color = Color.red;
+            // 攻撃アニメーション
+            WeaponAttackAnimation(false, e_status[4]);
+        }
+        else if (enemy.Name == "オーガ") // オーガのルーチン
+        {
+            // 確率0.4で当たる大ぶりな攻撃
+            float hit = UnityEngine.Random.Range(0f, 1.0f);
+            UnityEngine.Debug.Log("hit :" + hit);
+
+            if (hit < 0.6f)
+            {
+                damage = 0;
+                generaltext.text = $"{enemy.Name} は攻撃を外した！";
+
+                // 攻撃アニメーションのみ
+                WeaponAttackAnimation(false, e_status[4]);
+            }
+            else
+            {
+                damage = playerdataholder.player.TakeDamage(enemy.ATK * 2);
+                generaltext.text = $"{enemy.Name} の全力攻撃！";
+
+                // ダメージ表示
+                numtext_p.text = (-damage).ToString();
+                numtext_p.color = Color.red;
+                // 攻撃アニメーション
+                WeaponAttackAnimation(false, e_status[4]);
+            }
+        }
+        else if (enemy.Name == "ウィッチ") // ウィッチのルーチン
+        {
+            if (enemy.HP > (enemies[2].BaseHp + enemy.Lv) / 2) // HPが半分以上なら攻撃
+            {
+                damage = playerdataholder.player.TakeDamage(enemy.ATK + playerdataholder.player.Lv); // 魔法攻撃なので、防御力貫通
+                generaltext.text = $"{enemy.Name} の魔法攻撃！";
+
+                // ダメージ表示
+                numtext_p.text = (-damage).ToString();
+                numtext_p.color = Color.red;
+                // 攻撃アニメーション
+                WeaponAttackAnimation(false, e_status[4]);
+            }
+            else // 半分以下なら、回復を繰り返す
+            {
+                heal = enemy.HealDamage(enemy.ATK);
+                generaltext.text = $"{enemy.Name} は回復した！";
+
+                // 回復量表示
+                numtext_e.text = $" + {(heal).ToString()}";
+                numtext_e.color = Color.green;
+                // 回復アニメーション
+                StartCoroutine(weaponcontroller_e.HealAnimationCoroutine(false));
+            }
+        }
+
         // リセット系処理
         yield return new WaitForSeconds(0.5f);
         numtext_p.text = "";
     }
+
+    /* ここから関数の定義*/
 
     // 敵の自動的生成
     // ベースとなるステータスの設定
@@ -255,5 +325,55 @@ public class BattleManager : MonoBehaviour
         enemy_status[4] = enemies[enemy_status[0]].WeaponIndex;
 
         return enemy_status;
+    }
+
+    // 武器に応じてアニメーションを呼び出す関数
+    private void WeaponAttackAnimation(bool player, int weapon_number)
+    {
+        Vector3 p_pos = new Vector3(2.5f, -2f, 0);
+        Vector3 e_pos = new Vector3(-2.5f, -2f, 0);
+
+        if (player) // 味方版
+        {
+            if (weapon_number == 0) // 剣のアニメーション
+            {
+                StartCoroutine(weaponcontroller_p.SwordAnimationCoroutine(p_pos, player));
+            }
+            else if (weapon_number == 1) // 斧のアニメーション
+            {
+                StartCoroutine(weaponcontroller_p.AxAnimationCoroutine(p_pos, player));
+            }
+            else if (weapon_number == 2) // 槍のアニメーション
+            {
+                StartCoroutine(weaponcontroller_p.SpearAnimationCoroutine(p_pos, player));
+            }
+            else if (weapon_number == 3) // 槌のアニメーション
+            {
+                StartCoroutine(weaponcontroller_p.MiceAnimationCoroutine(p_pos, player));
+            }
+        }
+        else // 敵版
+        {
+            if (weapon_number == 0) // 剣のアニメーション
+            {
+                StartCoroutine(weaponcontroller_e.SwordAnimationCoroutine(e_pos, player));
+            }
+            else if (weapon_number == 1) // 斧のアニメーション
+            {
+                StartCoroutine(weaponcontroller_e.AxAnimationCoroutine(e_pos, player));
+            }
+            else if (weapon_number == 2) // 槍のアニメーション
+            {
+                StartCoroutine(weaponcontroller_e.SpearAnimationCoroutine(e_pos, player));
+            }
+            else if (weapon_number == 3) // 槌のアニメーション
+            {
+                StartCoroutine(weaponcontroller_e.MiceAnimationCoroutine(e_pos, player));
+            }
+            else if (weapon_number == -1) // 魔法のアニメーション、敵専用
+            {
+                StartCoroutine(weaponcontroller_e.MagicAnimationCoroutine(Color.white, player));
+            }
+        }
     }
 }

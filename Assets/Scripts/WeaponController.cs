@@ -21,7 +21,7 @@ public class WeaponController : MonoBehaviour
     private float moveDuration = 1f;  // 移動にかける時間
 
     // 剣のアニメーション(上から下へ斬り下ろす)
-    public IEnumerator SwordAnimationCoroutine(Vector3 goal, bool left)
+    public IEnumerator SwordAnimationCoroutine(Vector3 goal, bool left = true)
     {
         if (!left)
         {
@@ -56,7 +56,7 @@ public class WeaponController : MonoBehaviour
     }
 
     // 斧のアニメーション(下から上へ斬り上げる)
-    public IEnumerator AxAnimationCoroutine(Vector3 goal, bool left)
+    public IEnumerator AxAnimationCoroutine(Vector3 goal, bool left = true)
     {
         startAngle = 210f;
         endAngle = 150f;
@@ -93,7 +93,7 @@ public class WeaponController : MonoBehaviour
     }
 
     // 槍のアニメーション(真っ直ぐ進んでいく)
-    public IEnumerator SpearAnimationCoroutine(Vector3 goal, bool left)
+    public IEnumerator SpearAnimationCoroutine(Vector3 goal, bool left = true)
     {
         Vector3 startpos = new Vector3(5, 0, 0);
         Vector3 endpos = new Vector3(-5, 0, 0);
@@ -131,7 +131,7 @@ public class WeaponController : MonoBehaviour
     }
 
     // 槌のアニメーション(振り上げて、真っ直ぐ振り下ろす)
-    public IEnumerator MiceAnimationCoroutine(Vector3 goal, bool left)
+    public IEnumerator MiceAnimationCoroutine(Vector3 goal, bool left = true)
     {
         float halfDuration = moveDuration / 2;
         float elapsed = 0f;
@@ -185,7 +185,7 @@ public class WeaponController : MonoBehaviour
     }
 
     // MAGIC攻撃用アニメーション(引数が色の点に注意)
-    public IEnumerator MagicAnimationCoroutine(Color Weaponcolor, bool left)
+    public IEnumerator MagicAnimationCoroutine(Color Weaponcolor, bool left = true)
     {
         Vector3 startpos = new Vector3(5f, 0, 0);
         if (!left) {  startpos.x = -startpos.x; }
@@ -217,7 +217,7 @@ public class WeaponController : MonoBehaviour
     }
 
     // 回復用アニメーション(一定時間演出を出すだけ)
-    public IEnumerator HealAnimationCoroutine(bool left)
+    public IEnumerator HealAnimationCoroutine(bool left = true)
     {
         Vector3 pos = new Vector3(5f, -0.5f, 0);
         if (!left) { pos.x = -pos.x; }

@@ -52,8 +52,8 @@ public class PlayerDataHolder : MonoBehaviour
     {
         utilFunctions = GetComponent<UtilFunctions>();
 
-        //プレイヤー初期宣言(名前、レベル、HP、攻撃力)
-        player = new ParameterDifiner.Player("yu-sya", 1, 0, 50, 10);
+        //プレイヤー初期宣言(名前、レベル、Exp、HP、MP、攻撃力)
+        player = new ParameterDifiner.Player("yu-sya", 1, 0, 50, 25, 10);
 
         //武器初期宣言(名前、攻撃力、スキル、画像、色)
         player_weapon = new ParameterDifiner.Weapon("tmp_sword", 10, ParameterDifiner.SKILL.MAGIC, 0, 0);
@@ -78,15 +78,17 @@ public class PlayerDataHolder : MonoBehaviour
         //ステータステキストを表示
         statustext.text = string.Format(
             "Name:{0,-5}  Lv:{1,-3}  Exp:{2,-3}\n" +
-            "HP:{3,3}/{4,-3}  ATK:{5,-3}\n" +
-            "Weapon:{6}",
+            "HP:{3,3}/{4,-3}  MP:{5, 3}/{6, -3}\n" +
+            "Weapon:{7, -6}  ATK:{8,-3}",
             player.Name,
             player.Lv,
             player.Exp,
             player.HP,
             player.MaxHP,
-            player.ATK + player_weapon.WeaponATK,
-            player_weapon.WeaponName
+            player.MP,
+            player.MaxMP,
+            player_weapon.WeaponName,
+            player.ATK + player_weapon.WeaponATK
         );
 
     }
@@ -162,7 +164,7 @@ public class PlayerDataHolder : MonoBehaviour
         DropPanel.SetActive(true);
 
         // 新しい武器を生成
-        int[] new_wstatus = utilFunctions.AutoWeaponStatusGenerater(player.Lv); 
+        int[] new_wstatus = utilFunctions.AutoWeaponStatusGenerater(player.Lv);
         new_weapon = new ParameterDifiner.Weapon(utilFunctions.GetWeaponName(new_wstatus), new_wstatus[0], (ParameterDifiner.SKILL)new_wstatus[1], new_wstatus[2], new_wstatus[3]);
 
         NewWeaponPrefab = Instantiate(TmpWeaponObj, new Vector3(0, 0, 0), Quaternion.identity);
