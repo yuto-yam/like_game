@@ -82,23 +82,42 @@ public class ParameterDifiner : MonoBehaviour
     // プレイヤーを生成し、管理するクラス
     public class Player : Character
     {
-        // プロパティとしてExpを管理
+        // プロパティとしてExpとMPを追加
         public int Exp { get; private set; }
+        public int MaxMP { get; private set; }
+        public int MP { get; private set; }
 
-        // コンストラクタで基底クラスを呼び出し、Expも設定
-        public Player(string name, int lv, int exp, int maxHP, int atk) : base(name, lv, maxHP, atk)
+        // コンストラクタ
+        public Player(string name, int lv, int exp, int maxHP, int maxMP, int atk) : base(name, lv, maxHP, atk)
         {
             Exp = exp;
+            MaxMP = maxMP;
+            MP = maxMP;
         }
 
         // 経験値を加算する
         public void AddExp(int exp) => Exp += exp;
+
+        // MP処理
+        public void MPChange(int change)
+        {
+            if (change >= 0)
+            {
+                MP -= change;
+            }
+            else
+            {
+                MP = Mathf.Min(MP + change, MaxMP);  // 最大MPを超えないように
+            }
+        }
 
         // レベルアップ時の処理
         public void LevelUP()
         {
             MaxHP += Lv * 2;
             HP = Mathf.Min(HP + Lv * 2, MaxHP);  // HPがMaxHPを超えないように
+            MaxMP += Lv;
+            MP = Mathf.Min(MP + Lv, MaxMP);      // MPがMaxMPを超えないように
             ATK += Lv;
             Lv += 1;
 

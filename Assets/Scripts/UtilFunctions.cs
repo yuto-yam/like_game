@@ -62,4 +62,12 @@ public class UtilFunctions : MonoBehaviour
         return $"{skillName}{colorName}{weaponName}";
     }
 
+    public enum WEAPONS
+    {
+        SWORD, // 0
+        AX,    // 1
+        SPEAR, // 2
+        MICE,  // 3
+        HAND,  // 4
+    }
 }
