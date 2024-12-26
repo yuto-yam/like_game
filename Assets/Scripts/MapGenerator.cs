@@ -1,31 +1,32 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
 
-// ƒeƒLƒXƒgƒf[ƒ^‚©‚ç–À˜H‚ğì‚éƒXƒNƒŠƒvƒg
+// ãƒ†ã‚­ã‚¹ãƒˆãƒ‡ãƒ¼ã‚¿ã‹ã‚‰è¿·è·¯ã‚’ä½œã‚‹ã‚¹ã‚¯ãƒªãƒ—ãƒˆ
 public class MapGenerator : MonoBehaviour
 {
-    [SerializeField] TextAsset mapText; // –À˜H‚ÌŒ³‚Æ‚È‚éƒeƒLƒXƒgƒAƒZƒbƒg
-    public List<TextAsset> MapTextList = new List<TextAsset>(); // –À˜HƒeƒLƒXƒg‚Ìˆê——
-    [SerializeField] GameObject[] prefabs; // –À˜H‚Ìƒp[ƒc—pƒvƒŒƒnƒu
+    [SerializeField] TextAsset mapText; // è¿·è·¯ã®å…ƒã¨ãªã‚‹ãƒ†ã‚­ã‚¹ãƒˆã‚¢ã‚»ãƒƒãƒˆ
+    public List<TextAsset> MapTextList = new List<TextAsset>(); // è¿·è·¯ãƒ†ã‚­ã‚¹ãƒˆã®ä¸€è¦§
+    [SerializeField] GameObject[] prefabs; // è¿·è·¯ã®ãƒ‘ãƒ¼ãƒ„ç”¨ãƒ—ãƒ¬ãƒãƒ–
     public enum MAP_TYPE
-    { GROUND, // 0
-      WALL,   // 1
-      STAIR, // 2
-      PLAYER   // 3
+    { GROUND,  // 0
+      WALL,    // 1
+      STAIR,   // 2
+      EVENT,   // 3
+      PLAYER   // 4
     }
 
-    public MAP_TYPE[,] mapTable; // ƒeƒLƒXƒg‚ÆƒvƒŒƒnƒu‚ğŒq‚°‚éƒe[ƒuƒ‹
+    public MAP_TYPE[,] mapTable; // ãƒ†ã‚­ã‚¹ãƒˆã¨ãƒ—ãƒ¬ãƒãƒ–ã‚’ç¹‹ã’ã‚‹ãƒ†ãƒ¼ãƒ–ãƒ«
     private float mapSize;
     private Vector2 centerPos;
 
-    // ŠeíƒXƒNƒŠƒvƒgæ“¾
+    // å„ç¨®ã‚¹ã‚¯ãƒªãƒ—ãƒˆå–å¾—
     ParameterDifiner parameterdifiner;
     UtilFunctions utilFunctions;
     
-    private Vector2Int Cpos; // Œ»İˆÊ’u
+    private Vector2Int Cpos; // ç¾åœ¨ä½ç½®
 
     public MAP_TYPE GetNextMapType(Vector2Int _pos)
     {
@@ -35,7 +36,7 @@ public class MapGenerator : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        // ŠeíƒXƒNƒŠƒvƒgæ“¾
+        // å„ç¨®ã‚¹ã‚¯ãƒªãƒ—ãƒˆå–å¾—
         parameterdifiner = GameManager.Instance.GetComponent<ParameterDifiner>();
         utilFunctions = GameManager.Instance.GetComponent<UtilFunctions>();
 
@@ -45,31 +46,31 @@ public class MapGenerator : MonoBehaviour
             return;
         }
 
-        // ƒoƒgƒ‹¨–À˜H‚Ìê‡‘O‚Ì–À˜H‚ÆˆÊ’u‚É–ß‚é
+        // ãƒãƒˆãƒ«â†’è¿·è·¯ã®å ´åˆå‰ã®è¿·è·¯ã¨ä½ç½®ã«æˆ»ã‚‹
         if (parameterdifiner.IsFromBattle)
         {
             mapText = MapTextList[parameterdifiner.MapNumber];
         }
-        // ˆê——‚©‚çƒ‰ƒ“ƒ_ƒ€‚É–À˜H‚ğ1‚Â‘I‚Ô
+        // ä¸€è¦§ã‹ã‚‰ãƒ©ãƒ³ãƒ€ãƒ ã«è¿·è·¯ã‚’1ã¤é¸ã¶
         else
         {
             int mapnumber = UnityEngine.Random.Range(0, MapTextList.Count);
             mapText = MapTextList[mapnumber];
             parameterdifiner.MapNumber = mapnumber;
         }
-        // –À˜H¶¬
+        // è¿·è·¯ç”Ÿæˆ
         _loadMapData(mapText);
         _createMap();
     }
 
-    // txtƒtƒ@ƒCƒ‹‚ğ“Ç‚İ‚ß‚é‚æ‚¤‚É•ÏŠ·‚·‚é
+    // txtãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã‚ã‚‹ã‚ˆã†ã«å¤‰æ›ã™ã‚‹
     void _loadMapData(TextAsset textAsset)
     {
-        // —ñ‚²‚Æ‚Étxt‚ğ“Ç‚İ‚İ
+        // åˆ—ã”ã¨ã«txtã‚’èª­ã¿è¾¼ã¿
         string[] mapLines = textAsset.text.Split(new[] { '\n', '\r' }, System.StringSplitOptions.RemoveEmptyEntries);
-        // –À˜H‚Ì‘å‚«‚³æ“¾
+        // è¿·è·¯ã®å¤§ãã•å–å¾—
         int row = mapLines.Length;
-        // ƒRƒ“ƒ}‹æØ‚è‚Æ‰¼’è
+        // ã‚³ãƒ³ãƒåŒºåˆ‡ã‚Šã¨ä»®å®š
         int col = mapLines[0].Split(',').Length;
         mapTable = new MAP_TYPE[row, col];
 
@@ -83,7 +84,7 @@ public class MapGenerator : MonoBehaviour
         }
     }
 
-    // •ÏŠ·‚µ‚½txt‚©‚ç‘Î‰‚·‚éƒvƒŒƒnƒu‚ğİ’u‚µ‚Ä–À˜H¶¬
+    // å¤‰æ›ã—ãŸtxtã‹ã‚‰å¯¾å¿œã™ã‚‹ãƒ—ãƒ¬ãƒãƒ–ã‚’è¨­ç½®ã—ã¦è¿·è·¯ç”Ÿæˆ
     void _createMap()
     {
         if (prefabs == null || prefabs.Length == 0 || prefabs[1] == null)
@@ -94,13 +95,13 @@ public class MapGenerator : MonoBehaviour
 
         mapSize = prefabs[1].GetComponent<SpriteRenderer>().bounds.size.x;
 
-        // ƒvƒŒƒnƒu‚ÌƒTƒCƒY‚ğ’²®
+        // ãƒ—ãƒ¬ãƒãƒ–ã®ã‚µã‚¤ã‚ºã‚’èª¿æ•´
         centerPos = new Vector2(
             (mapTable.GetLength(1) % 2 == 0 ? mapTable.GetLength(1) / 2 - 0.5f : mapTable.GetLength(1) / 2) * mapSize,
             (mapTable.GetLength(0) % 2 == 0 ? mapTable.GetLength(0) / 2 - 0.5f : mapTable.GetLength(0) / 2) * mapSize
         );
 
-        // ‡”Ô‚ÉƒvƒŒƒnƒuˆÊ’u
+        // é †ç•ªã«ãƒ—ãƒ¬ãƒãƒ–ä½ç½®
         for (int y = 0; y < mapTable.GetLength(0); y++)
         {
             for (int x = 0; x < mapTable.GetLength(1); x++)
@@ -110,14 +111,14 @@ public class MapGenerator : MonoBehaviour
                 Instantiate(prefabs[(int)MAP_TYPE.GROUND], ScreenPos(pos), Quaternion.identity, transform);
                 GameObject _map = Instantiate(prefabs[(int)mapTable[y, x]], ScreenPos(pos), Quaternion.identity, transform);
 
-                // ƒ{ƒXí‘O‚ÌŠK’i‚ÍÔ‚­
+                // ãƒœã‚¹æˆ¦å‰ã®éšæ®µã¯èµ¤ã
                 if (parameterdifiner.MazeCount % 3 == 2 && mapTable[y, x] == MAP_TYPE.STAIR)
                 {
                     utilFunctions.SetObjectColor(_map, Color.red);
                 }
             }
         }
-        // ƒoƒgƒ‹¨–À˜H‚È‚çŒ³‚ÌˆÊ’u‚ÖA‚»‚êˆÈŠO‚Å‚ ‚ê‚Î¶ãƒXƒ^[ƒg
+        // ãƒãƒˆãƒ«â†’è¿·è·¯ãªã‚‰å…ƒã®ä½ç½®ã¸ã€ãã‚Œä»¥å¤–ã§ã‚ã‚Œã°å·¦ä¸Šã‚¹ã‚¿ãƒ¼ãƒˆ
         Cpos = parameterdifiner.IsFromBattle ? parameterdifiner.CPOS : new Vector2Int(1, 1);
         parameterdifiner.IsFromBattle = false;
 

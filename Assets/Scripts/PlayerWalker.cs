@@ -27,6 +27,7 @@ public class PlayerWalker : MonoBehaviour
     // 各種スクリプト取得
     MapGenerator mapgenerator;
     ParameterDifiner parameterdifiner;
+    PlayerDataHolder playerdataholder;
     UtilFunctions utilFunctions;
     public Camera TargetCamera;
 
@@ -51,6 +52,7 @@ public class PlayerWalker : MonoBehaviour
         directon = DIRECTION.DOWN;
 
         parameterdifiner = GameManager.Instance.GetComponent<ParameterDifiner>();
+        playerdataholder = GameManager.Instance.GetComponent<PlayerDataHolder>();
         utilFunctions = GameManager.Instance.GetComponent<UtilFunctions>();
     }
 
@@ -118,7 +120,7 @@ public class PlayerWalker : MonoBehaviour
                 SceneManager.LoadScene("Maze");
             }
         }
-        else if (Encounter >= 1f) //ゴール以外で、敵との遭遇危険度が1を超えたら戦闘へ
+        else if (Encounter >= 1f && mapgenerator.GetNextMapType(currentPos) != MapGenerator.MAP_TYPE.EVENT) //ゴールとイベントマス以外で、敵との遭遇危険度が1を超えたら戦闘へ
         {
             parameterdifiner.CPOS = currentPos;
             StartCoroutine(HandleEncounter(0.5f, 0.1f));

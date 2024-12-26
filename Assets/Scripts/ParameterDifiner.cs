@@ -101,13 +101,13 @@ public class ParameterDifiner : MonoBehaviour
         // MP処理
         public void MPChange(int change)
         {
-            if (change >= 0)
+            if (change >= 0) // MP消費
             {
                 MP -= change;
             }
-            else
+            else // MP回復(引数を負で渡す)
             {
-                MP = Mathf.Min(MP + change, MaxMP);  // 最大MPを超えないように
+                MP = Mathf.Min(MP - change, MaxMP);  // 最大MPを超えないように
             }
         }
 
