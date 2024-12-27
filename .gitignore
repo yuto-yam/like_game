@@ -73,4 +73,4 @@ crashlytics-build.properties
 
 # Ignore the Music folder
 [Aa]ssets/[Mm]usics/
-[Aa]ssets/[Mm]usics/*.meta
+[Aa]ssets/[Mm]usics.meta
