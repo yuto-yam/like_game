@@ -128,6 +128,14 @@ public class PlayerDataHolder : MonoBehaviour
         {
             DropSceneInit();
         }
+        else if (scene.name == "GameOver")
+        {
+            GameOverSceneInit();
+        }
+        else if (scene.name == "GameClear")
+        {
+            GameClearSceneInit();
+        }
     }
 
     // Mazeシーン読み込み時にUI系オブジェクトの位置を調整
@@ -181,21 +189,54 @@ public class PlayerDataHolder : MonoBehaviour
         UnityEngine.Debug.Log(NewWeaponPrefab.transform.position);
 
         newdroptext = NewDropText.GetComponent<UnityEngine.UI.Text>();
-        newdroptext.text = "名前：" + new_weapon.WeaponName + "\n" + "ATK:" + new_weapon.WeaponATK + "\n" + "SKILL:" + new_weapon.WeaponSkill;
+        newdroptext.text = $"名前：{new_weapon.WeaponName}\n ATK: {new_weapon.WeaponATK}\n SKILL: {new_weapon.WeaponSkill}";
 
         //プレイヤーの武器を取得して位置を調整
         WeaponPrefab.transform.position = new Vector3(-4f, 1f, 0);
         UnityEngine.Debug.Log(WeaponPrefab.transform.position);
 
         olddroptext = OldDropText.GetComponent<UnityEngine.UI.Text>();
-        olddroptext.text = "名前：" + player_weapon.WeaponName + "\n" + "ATK:" + player_weapon.WeaponATK + "\n" + "SKILL:" + player_weapon.WeaponSkill;
+        olddroptext.text = $"名前：{player_weapon.WeaponName}\n ATK: {player_weapon.WeaponATK}\n SKILL: {player_weapon.WeaponSkill}";
 
         generaltext = GeneralText.GetComponent<UnityEngine.UI.Text>();
-        generaltext.text = "新しい武器を入手しました！ 武器を変えますか？" + "         " + "Y/N";
+        generaltext.text = $"新しい武器を入手しました！ 武器を変えますか？         Y/N";
     }
 
+    private void GameOverSceneInit()
+    {
+        UnityEngine.Debug.Log("ゲームオーバー用の初期化処理を実行します。");
+        // プレイヤーの武器をMaze UIに配置
+        WeaponPrefab.transform.localPosition = new Vector3(0, -30f, -1f);
+
+        // UIの表示非表示切り替え
+        GeneralPanel.SetActive(true);
+        BattlePanel.SetActive(false);
+        DropPanel.SetActive(false);
+
+        generaltext = GeneralText.GetComponent<UnityEngine.UI.Text>();
+        generaltext.text = $"{player.Name}は力尽きてしまった……。      Enterを押してタイトルに戻る";
+    }
+
+    private void GameClearSceneInit()
+    {
+        UnityEngine.Debug.Log("ゲームクリア用の初期化処理を実行します。");
+        // プレイヤーの武器をMaze UIに配置
+        WeaponPrefab.transform.localPosition = new Vector3(0, -30f, -1f);
+
+        // UIの表示非表示切り替え
+        GeneralPanel.SetActive(true);
+        BattlePanel.SetActive(false);
+        DropPanel.SetActive(false);
+
+        generaltext = GeneralText.GetComponent<UnityEngine.UI.Text>();
+        generaltext.text = $"出口を見つけた！しかし、迷宮は更に奥にも続いているようだ……。どうしますか？ \n さらに奥に進む:Y/迷宮から出る:N (※奥に進む場合、以降倒れるまで無限に続きます。)";
+    }
+
+
+    /* ここから細かい関数の定義*/
+
     // プレハブにスプライトと色を適用するメソッド
-    void ApplyWeaponAttributes(GameObject weaponInstance, ParameterDifiner.Weapon weapon)
+    private void ApplyWeaponAttributes(GameObject weaponInstance, ParameterDifiner.Weapon weapon)
     {
         // スプライトを設定するためのSpriteRenderer
         SpriteRenderer spriteRenderer = weaponInstance.GetComponent<SpriteRenderer>();

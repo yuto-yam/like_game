@@ -35,12 +35,22 @@ public class DropRenewer : MonoBehaviour
             playerdataholder.player_weapon = playerdataholder.new_weapon;
             playerdataholder.WeaponPrefab = NewWeaponPrefab;
             Destroy(CurrentWeaponPrefab);
-            SceneManager.LoadScene("Maze");
+            // 9階層(ボス3回)で一旦クリアへ
+            if (parameterdifiner.MazeCount == 9)
+            {
+                SceneManager.LoadScene("GameClear");
+            }
+            else { SceneManager.LoadScene("Maze"); }
         }
         if (Input.GetKeyDown(KeyCode.N))
         {
             Destroy(NewWeaponPrefab);
-            SceneManager.LoadScene("Maze");
+            // 9階層(ボス3回)で一旦クリアへ
+            if (parameterdifiner.MazeCount == 9)
+            {
+                SceneManager.LoadScene("GameClear");
+            }
+            else { SceneManager.LoadScene("Maze"); }
         }
     }
 }
