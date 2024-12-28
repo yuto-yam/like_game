@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -29,6 +30,7 @@ public class PlayerWalker : MonoBehaviour
     ParameterDifiner parameterdifiner;
     PlayerDataHolder playerdataholder;
     UtilFunctions utilFunctions;
+    SoundEffectPlayer soundEffectPlayer;
     public Camera TargetCamera;
 
     [SerializeField] float Encounter = 0; // 敵との遭遇危険度 1以上でエンカウント
@@ -54,6 +56,7 @@ public class PlayerWalker : MonoBehaviour
         parameterdifiner = GameManager.Instance.GetComponent<ParameterDifiner>();
         playerdataholder = GameManager.Instance.GetComponent<PlayerDataHolder>();
         utilFunctions = GameManager.Instance.GetComponent<UtilFunctions>();
+        soundEffectPlayer = GameManager.Instance.GetComponent<SoundEffectPlayer>();
     }
 
     // Update is called once per frame
@@ -112,16 +115,27 @@ public class PlayerWalker : MonoBehaviour
             // 迷路3つごとにボス戦へ
             if (parameterdifiner.MazeCount % 3 == 0)
             {
+                // エンカウントSEの再生
+                soundEffectPlayer.EncountSEPlay();
                 parameterdifiner.IsBossBattle = true;
                 StartCoroutine(HandleEncounter(1.0f, 0.3f));
             }
             else
             {
+                // 階段を降りるSE
+                soundEffectPlayer.StairDownSEPlay();
                 SceneManager.LoadScene("Maze");
             }
         }
-        else if (Encounter >= 1f && mapgenerator.GetNextMapType(currentPos) != MapGenerator.MAP_TYPE.EVENT) //ゴールとイベントマス以外で、敵との遭遇危険度が1を超えたら戦闘へ
+        else if (mapgenerator.GetNextMapType(currentPos) == MapGenerator.MAP_TYPE.EVENT) // イベントマスでHPとMP回復
         {
+            // 回復SE
+            soundEffectPlayer.HealSEPlay();
+        }
+        else if (Encounter >= 1f) //ゴールとイベントマス以外で、敵との遭遇危険度が1を超えたら戦闘へ
+        {
+            // エンカウントSEの再生
+            soundEffectPlayer.EncountSEPlay();
             parameterdifiner.CPOS = currentPos;
             StartCoroutine(HandleEncounter(0.5f, 0.1f));
         }
@@ -177,6 +191,10 @@ public class PlayerWalker : MonoBehaviour
 
             UnityEngine.Debug.Log(Encounter);
             UnityEngine.Debug.Log(currentPos);
+        }
+        else
+        {
+            soundEffectPlayer.MoveCancelSEPlay();
         }
     }
 

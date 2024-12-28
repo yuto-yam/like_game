@@ -11,11 +11,12 @@ public class MapGenerator : MonoBehaviour
     public List<TextAsset> MapTextList = new List<TextAsset>(); // 迷路テキストの一覧
     [SerializeField] GameObject[] prefabs; // 迷路のパーツ用プレハブ
     public enum MAP_TYPE
-    { GROUND,  // 0
-      WALL,    // 1
-      STAIR,   // 2
-      EVENT,   // 3
-      PLAYER   // 4
+    { 
+        GROUND,  // 0
+        WALL,    // 1
+        STAIR,   // 2
+        EVENT,   // 3
+        PLAYER   // 4
     }
 
     public MAP_TYPE[,] mapTable; // テキストとプレハブを繋げるテーブル
@@ -124,6 +125,7 @@ public class MapGenerator : MonoBehaviour
 
         GameObject player = Instantiate(prefabs[(int)MAP_TYPE.PLAYER], ScreenPos(Cpos), Quaternion.identity, transform);
         player.GetComponent<PlayerWalker>().currentPos = Cpos;
+
     }
 
     public Vector2 ScreenPos(Vector2Int _pos)

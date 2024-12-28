@@ -16,6 +16,7 @@ public class BattleManager : MonoBehaviour
     PlayerDataHolder playerdataholder;
     ParameterDifiner parameterdifiner;
     UtilFunctions utilfunctions;
+    SoundEffectPlayer soundEffectPlayer;
 
     // 武器を参照する準備
     GameObject PlayerWeponObj;
@@ -46,6 +47,7 @@ public class BattleManager : MonoBehaviour
         playerdataholder = GameManager.Instance.GetComponent<PlayerDataHolder>();
         parameterdifiner = GameManager.Instance.GetComponent<ParameterDifiner>();
         utilfunctions = GameManager.Instance.GetComponent<UtilFunctions>();
+        soundEffectPlayer = GameManager.Instance.GetComponent<SoundEffectPlayer>();
 
 
         // 敵を生成
@@ -127,11 +129,13 @@ public class BattleManager : MonoBehaviour
             // 現在レベルの2倍の経験値を得たらレベルアップ
             if (playerdataholder.player.Exp >= playerdataholder.player.Lv * 2)
             {
+                soundEffectPlayer.LvUpSEPlay();
                 playerdataholder.player.LevelUP();
                 // テキスト表示
                 generaltext.text = $"{playerdataholder.player.Name}のレベルが{playerdataholder.player.Lv}に上がった！";
                 numtext_p.text = "LvUP!";
                 numtext_p.color = Color.white;
+                // LvUPSEを再生
                 yield return new WaitForSeconds(1f);
             }
 
@@ -150,13 +154,16 @@ public class BattleManager : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.A)) // 通常攻撃
             {
+                // 決定音(他と被るためコメントアウト)
+                // soundEffectPlayer.DecideSEPlay();
                 // 攻撃処理
                 damage = enemy.TakeDamage(playerdataholder.player.ATK + playerdataholder.player_weapon.WeaponATK); // ダメージを算出
                 generaltext.text = $"{playerdataholder.player.Name} の攻撃！";
                 // ダメージを表示
                 numtext_e.text = (-damage).ToString();
                 numtext_e.color = Color.red;
-                // 武器のアニメーション
+                // 武器の音とアニメーション
+                soundEffectPlayer.WeaponSEPlay(playerdataholder.player_weapon.SpriteIndex);
                 WeaponAttackAnimation(true, playerdataholder.player_weapon.SpriteIndex);
                 yield return new WaitForSeconds(0.5f);
 
@@ -167,6 +174,8 @@ public class BattleManager : MonoBehaviour
 
             else if (Input.GetKeyDown(KeyCode.S)) // スキル攻撃
             {
+                // 決定音(他と被るためコメントアウト)
+                // soundEffectPlayer.DecideSEPlay();
                 // スキル処理
                 int useMP = playerdataholder.player_weapon.WeaponATK / 2; // 消費MP = 武器攻撃力の半分
                 if (useMP <= playerdataholder.player.MP)
@@ -182,7 +191,8 @@ public class BattleManager : MonoBehaviour
                         // ダメージを表示
                         numtext_e.text = (-damage).ToString();
                         numtext_e.color = Color.red;
-                        // スキルのアニメーション
+                        // スキルの音とアニメーション
+                        soundEffectPlayer.ExtraWeaponSEplay(2);
                         StartCoroutine(weaponcontroller_p.MagicAnimationCoroutine(ParameterDifiner.ColorPalette.IndexToColor(playerdataholder.player_weapon.ColorIndex), true));
                         yield return new WaitForSeconds(0.5f);
                     }
@@ -194,7 +204,8 @@ public class BattleManager : MonoBehaviour
                         // 回復量表示
                         numtext_p.text = $" + {(heal).ToString()}";
                         numtext_p.color = Color.green;
-                        // スキルのアニメーション
+                        // スキルの音とアニメーション
+                        soundEffectPlayer.HealSEPlay();
                         StartCoroutine(weaponcontroller_p.HealAnimationCoroutine(true));
                         yield return new WaitForSeconds(0.5f);
                     }
@@ -205,7 +216,13 @@ public class BattleManager : MonoBehaviour
                     numtext_p.text = "";
                     IsWaiting = true;
                 }
-                else { generaltext.text = "しかしMPが足りない！"; }
+                else
+                { 
+                    generaltext.text = "しかしMPが足りない！";
+                    yield return new WaitForSeconds(0.5f);
+                    // テキストを戻す
+                    generaltext.text = $"ターン {turn}: {playerdataholder.player.Name} はどうする？    A:攻撃/S:スキル";
+                }
             }
 
             yield return null; // 入力待機
@@ -224,7 +241,8 @@ public class BattleManager : MonoBehaviour
             // ダメージ表示
             numtext_p.text = (-damage).ToString();
             numtext_p.color = Color.red;
-            // 攻撃アニメーション
+            // 攻撃の音とアニメーション
+            soundEffectPlayer.WeaponSEPlay(e_status[4]);
             WeaponAttackAnimation(false, e_status[4]);
         }
         else if (enemy.Name == "オーガ") // オーガのルーチン
@@ -238,7 +256,8 @@ public class BattleManager : MonoBehaviour
                 damage = 0;
                 generaltext.text = $"{enemy.Name} は攻撃を外した！";
 
-                // 攻撃アニメーションのみ
+                // 音と攻撃アニメーションのみ
+                soundEffectPlayer.ExtraWeaponSEplay(0);
                 WeaponAttackAnimation(false, e_status[4]);
             }
             else
@@ -249,7 +268,8 @@ public class BattleManager : MonoBehaviour
                 // ダメージ表示
                 numtext_p.text = (-damage).ToString();
                 numtext_p.color = Color.red;
-                // 攻撃アニメーション
+                // 音と攻撃アニメーション
+                soundEffectPlayer.ExtraWeaponSEplay(1);
                 WeaponAttackAnimation(false, e_status[4]);
             }
         }
@@ -263,7 +283,8 @@ public class BattleManager : MonoBehaviour
                 // ダメージ表示
                 numtext_p.text = (-damage).ToString();
                 numtext_p.color = Color.red;
-                // 攻撃アニメーション
+                // 音と攻撃アニメーション
+                soundEffectPlayer.ExtraWeaponSEplay(2);
                 WeaponAttackAnimation(false, e_status[4]);
             }
             else // 半分以下なら、回復を繰り返す
@@ -274,13 +295,20 @@ public class BattleManager : MonoBehaviour
                 // 回復量表示
                 numtext_e.text = $" + {(heal).ToString()}";
                 numtext_e.color = Color.green;
-                // 回復アニメーション
+                // 音と回復アニメーション
+                soundEffectPlayer.HealSEPlay();
                 StartCoroutine(weaponcontroller_e.HealAnimationCoroutine(false));
             }
         }
 
         // リセット系処理
         yield return new WaitForSeconds(0.5f);
+        // HP1/4で警告音
+        if (playerdataholder.player.HP <= playerdataholder.player.MaxHP / 4)
+        {
+            soundEffectPlayer.DangerSEPlay();
+            yield return new WaitForSeconds(0.5f);
+        }
         numtext_p.text = "";
     }
 
@@ -301,9 +329,9 @@ public class BattleManager : MonoBehaviour
     EnemyStatus[] enemies = new EnemyStatus[]
     {
         // 宣言順は、画像リストと同じにすること(EnemySpriteListの0はゴブリンということ)
-        new EnemyStatus { Name = "ゴブリン", BaseHp = 10, BaseAtk = 1, WeaponIndex = 1 }, // 武器は斧
-        new EnemyStatus { Name = "オーガ", BaseHp = 20, BaseAtk = 5, WeaponIndex = 0 },   // 武器は剣
-        new EnemyStatus { Name = "ウィッチ", BaseHp = 15, BaseAtk = 3, WeaponIndex = -1 },// 武器は無し                
+        new EnemyStatus { Name = "ゴブリン", BaseHp = 10, BaseAtk = 2, WeaponIndex = (int)UtilFunctions.WEAPONS.AX },    // 武器は斧
+        new EnemyStatus { Name = "オーガ", BaseHp = 20, BaseAtk = 4, WeaponIndex = (int)UtilFunctions.WEAPONS.SWORD },   // 武器は剣
+        new EnemyStatus { Name = "ウィッチ", BaseHp = 15, BaseAtk = 3, WeaponIndex = -1 },                               // 武器は無し                
     };
 
     private int[] AutoEnemyGenerater(int pLv, bool Boss)
@@ -319,7 +347,7 @@ public class BattleManager : MonoBehaviour
             enemy_status[1] += 2; // Bossなら、2レベル上げる
         }
         // レベルに応じてステータス調整
-        enemy_status[2] = enemies[enemy_status[0]].BaseHp  + enemy_status[1] * 2;
+        enemy_status[2] = enemies[enemy_status[0]].BaseHp  + enemy_status[1] * 4;
         enemy_status[3] = enemies[enemy_status[0]].BaseAtk + enemy_status[1];
         // 武器インデックスを収納
         enemy_status[4] = enemies[enemy_status[0]].WeaponIndex;

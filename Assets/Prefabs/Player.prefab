@@ -124,6 +124,7 @@ MonoBehaviour:
   directon: 0
   currentPos: {x: 0, y: 0}
   nextPos: {x: 0, y: 0}
+  SEManager: {fileID: 0}
   TargetCamera: {fileID: 0}
   Encounter: 0
 --- !u!60 &1056427251942553428
