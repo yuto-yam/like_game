@@ -24,17 +24,4 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject); // 複数のインスタンスを防止
         }
     }
-    /*
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-    */
 }

@@ -9,7 +9,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using static System.Net.Mime.MediaTypeNames;
 
-// 実際にステータスを管理するクラス
+// 実際にステータスを管理するクラス、実質的なGameManager
 public class PlayerDataHolder : MonoBehaviour
 {
     // プレイヤーのデータと武器
@@ -46,17 +46,21 @@ public class PlayerDataHolder : MonoBehaviour
 
     public List<Sprite> WeaponSpriteList; // 武器の候補リスト
 
+    // 各種スクリプト取得
     UtilFunctions utilFunctions;
+    BGMPlayer bgmPlayer;
+    [SerializeField] GameObject bgmManager;
 
     private void Awake()
     {
         utilFunctions = GetComponent<UtilFunctions>();
+        bgmPlayer = bgmManager.GetComponent<BGMPlayer>();
 
         //プレイヤー初期宣言(名前、レベル、Exp、HP、MP、攻撃力)
-        player = new ParameterDifiner.Player("yu-sya", 1, 0, 50, 25, 10);
+        player = new ParameterDifiner.Player("冒険者A", 1, 0, 50, 25, 5);
 
         //武器初期宣言(名前、攻撃力、スキル、画像、色)
-        player_weapon = new ParameterDifiner.Weapon("tmp_sword", 10, ParameterDifiner.SKILL.MAGIC, 0, 0);
+        player_weapon = new ParameterDifiner.Weapon("初めの剣", 2, ParameterDifiner.SKILL.MAGIC, 0, 0);
         WeaponPrefab = Instantiate(TmpWeaponObj, new Vector3(0, 0, 0), Quaternion.identity);
         WeaponPrefab.transform.SetParent(StatusPanel.transform, false);
         WeaponPrefab.transform.localScale = new Vector3(-250f, 250f, 250f);
@@ -109,6 +113,7 @@ public class PlayerDataHolder : MonoBehaviour
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         UnityEngine.Debug.Log("シーンが読み込まれました: " + scene.name);
+        bgmPlayer.PlayBGMForCurrentScene();
 
         // シーンごとに異なる処理を実行
         if (scene.name == "Maze")
@@ -173,12 +178,14 @@ public class PlayerDataHolder : MonoBehaviour
         NewWeaponPrefab.transform.SetParent(StatusPanel.transform, false);
         NewWeaponPrefab.transform.localScale = new Vector3(-250f, 250f, 250f);
         NewWeaponPrefab.transform.position = new Vector3(4f, 1f, 0);
+        UnityEngine.Debug.Log(NewWeaponPrefab.transform.position);
 
         newdroptext = NewDropText.GetComponent<UnityEngine.UI.Text>();
         newdroptext.text = "名前：" + new_weapon.WeaponName + "\n" + "ATK:" + new_weapon.WeaponATK + "\n" + "SKILL:" + new_weapon.WeaponSkill;
 
         //プレイヤーの武器を取得して位置を調整
         WeaponPrefab.transform.position = new Vector3(-4f, 1f, 0);
+        UnityEngine.Debug.Log(WeaponPrefab.transform.position);
 
         olddroptext = OldDropText.GetComponent<UnityEngine.UI.Text>();
         olddroptext.text = "名前：" + player_weapon.WeaponName + "\n" + "ATK:" + player_weapon.WeaponATK + "\n" + "SKILL:" + player_weapon.WeaponSkill;

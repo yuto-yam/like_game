@@ -8,6 +8,7 @@ public class DropRenewer : MonoBehaviour
 {
     ParameterDifiner parameterdifiner;
     PlayerDataHolder playerdataholder;
+    SoundEffectPlayer soundEffectPlayer;
 
     [SerializeField] GameObject CurrentWeaponPrefab;
     [SerializeField] GameObject NewWeaponPrefab;
@@ -17,6 +18,7 @@ public class DropRenewer : MonoBehaviour
     {
         parameterdifiner = GameManager.Instance.GetComponent<ParameterDifiner>();
         playerdataholder = GameManager.Instance.GetComponent<PlayerDataHolder>();
+        soundEffectPlayer = GameManager.Instance.GetComponent<SoundEffectPlayer>();
 
         CurrentWeaponPrefab = playerdataholder.WeaponPrefab;
         NewWeaponPrefab = playerdataholder.NewWeaponPrefab;
@@ -29,6 +31,7 @@ public class DropRenewer : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Y))
         {
+            soundEffectPlayer.DecideSEPlay();
             playerdataholder.player_weapon = playerdataholder.new_weapon;
             playerdataholder.WeaponPrefab = NewWeaponPrefab;
             Destroy(CurrentWeaponPrefab);
