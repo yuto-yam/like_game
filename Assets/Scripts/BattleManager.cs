@@ -116,11 +116,12 @@ public class BattleManager : MonoBehaviour
         if (playerdataholder.player.HP <= 0)
         {
             generaltext.text = "負けてしまった！";
+            yield return new WaitForSeconds(1.5f);
             playerdataholder.player.YouAreDEAD();
         }
         else if (enemy.HP <= 0)
         {
-            generaltext.text = enemy.Name + "を倒した!";
+            generaltext.text = $"{enemy.Name}を倒した!";
             yield return new WaitForSeconds(0.5f);
 
             // 倒した敵のレベル分経験値を得る

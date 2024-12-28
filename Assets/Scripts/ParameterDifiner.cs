@@ -129,6 +129,7 @@ public class ParameterDifiner : MonoBehaviour
         public override void YouAreDEAD()
         {
             UnityEngine.Debug.Log($"{Name} (Player) is DEAD.");
+            SceneManager.LoadScene("GameOver");
         }
     }
 

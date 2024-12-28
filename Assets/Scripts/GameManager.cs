@@ -24,4 +24,14 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject); // 複数のインスタンスを防止
         }
     }
+
+    // 特定状況でGameManagerを消去
+    public static void ResetGameManager()
+    {
+        if (Instance != null)
+        {
+            Destroy(Instance.gameObject);
+            Instance = null;
+        }
+    }
 }
