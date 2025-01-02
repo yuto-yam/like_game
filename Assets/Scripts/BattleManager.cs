@@ -348,7 +348,7 @@ public class BattleManager : MonoBehaviour
             enemy_status[1] += 2; // Bossなら、2レベル上げる
         }
         // レベルに応じてステータス調整
-        enemy_status[2] = enemies[enemy_status[0]].BaseHp  + enemy_status[1] * 4;
+        enemy_status[2] = enemies[enemy_status[0]].BaseHp  + enemy_status[1] * 2;
         enemy_status[3] = enemies[enemy_status[0]].BaseAtk + enemy_status[1];
         // 武器インデックスを収納
         enemy_status[4] = enemies[enemy_status[0]].WeaponIndex;

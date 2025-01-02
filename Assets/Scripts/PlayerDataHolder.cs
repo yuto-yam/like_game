@@ -57,7 +57,15 @@ public class PlayerDataHolder : MonoBehaviour
         bgmPlayer = bgmManager.GetComponent<BGMPlayer>();
 
         //プレイヤー初期宣言(名前、レベル、Exp、HP、MP、攻撃力)
-        player = new ParameterDifiner.Player("冒険者A", 1, 0, 50, 25, 5);
+        string PlayerName = ParameterDifiner.InputedName;
+        if (PlayerName == null)
+        {
+            player = new ParameterDifiner.Player("冒険者A", 1, 0, 50, 25, 5);
+        }
+        else
+        {
+            player = new ParameterDifiner.Player(PlayerName, 1, 0, 50, 25, 5);
+        }
 
         //武器初期宣言(名前、攻撃力、スキル、画像、色)
         player_weapon = new ParameterDifiner.Weapon("初めの剣", 2, ParameterDifiner.SKILL.MAGIC, 0, 0);

@@ -16,6 +16,8 @@ public class ParameterDifiner : MonoBehaviour
     public int MapNumber = 0; // 迷路の番号を記憶
     [SerializeField] Vector2Int cpos = new Vector2Int(1, 1); // 迷路での位置を記憶
 
+    public static string InputedName = null; // 名前を保存
+
     public Vector2Int CPOS // cposはprivateにしたので、値の入出力用の関数を作成
     {
         get { return cpos; }
@@ -118,7 +120,7 @@ public class ParameterDifiner : MonoBehaviour
             HP = Mathf.Min(HP + Lv * 2, MaxHP);  // HPがMaxHPを超えないように
             MaxMP += Lv;
             MP = Mathf.Min(MP + Lv, MaxMP);      // MPがMaxMPを超えないように
-            ATK += Lv;
+            ATK += 1;
             Lv += 1;
 
             // 経験値リセット

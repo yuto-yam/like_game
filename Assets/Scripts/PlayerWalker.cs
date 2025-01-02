@@ -129,8 +129,11 @@ public class PlayerWalker : MonoBehaviour
         }
         else if (mapgenerator.GetNextMapType(currentPos) == MapGenerator.MAP_TYPE.EVENT) // イベントマスでHPとMP回復
         {
-            // 回復SE
-            soundEffectPlayer.HealSEPlay();
+            if (playerdataholder.player.HP < playerdataholder.player.MaxHP || playerdataholder.player.MP  < playerdataholder.player.MaxMP) // 回復が必要な時だけ音を鳴らす
+            {
+                // 回復SE
+                soundEffectPlayer.HealSEPlay();
+            }
         }
         else if (Encounter >= 1f) //ゴールとイベントマス以外で、敵との遭遇危険度が1を超えたら戦闘へ
         {
