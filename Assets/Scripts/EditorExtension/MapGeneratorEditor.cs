@@ -1,4 +1,5 @@
-﻿using UnityEditor;
+﻿#if UNITY_EDITOR
+using UnityEditor;
 using UnityEngine;
 using System.IO;
 using static System.Net.Mime.MediaTypeNames;
@@ -52,3 +53,4 @@ public class MazeManagerEditor : Editor
         EditorUtility.SetDirty(mapGenerator);
     }
 }
+#endif
